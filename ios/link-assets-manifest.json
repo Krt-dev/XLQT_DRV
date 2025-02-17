@@ -1,0 +1,181 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "app/assets/fonts/Karla-Bold.ttf",
+      "sha1": "c245d7154645d1791c428999cabdfb4a31a30975"
+    },
+    {
+      "path": "app/assets/fonts/Karla-BoldItalic.ttf",
+      "sha1": "f549406fe1effb81ffdcab6bb4e8a6569c96bb15"
+    },
+    {
+      "path": "app/assets/fonts/Karla-ExtraBold.ttf",
+      "sha1": "3e6224d71339328e7236a0f4346b06b1167269a3"
+    },
+    {
+      "path": "app/assets/fonts/Karla-ExtraBoldItalic.ttf",
+      "sha1": "a225924b9de914f8a7b09ab259d1b5bf573b6e5f"
+    },
+    {
+      "path": "app/assets/fonts/Karla-ExtraLight.ttf",
+      "sha1": "459d0d6b3e7f37df67212506288212811cff419a"
+    },
+    {
+      "path": "app/assets/fonts/Karla-ExtraLightItalic.ttf",
+      "sha1": "395bcc5911045c27e0aef245f25d016354336b48"
+    },
+    {
+      "path": "app/assets/fonts/Karla-Italic.ttf",
+      "sha1": "e04c25c85d26ae1dc90747e84e3c09195c7effb8"
+    },
+    {
+      "path": "app/assets/fonts/Karla-Light.ttf",
+      "sha1": "fd8cef342ba80a9b76d1cd625b1c1c39367cd09f"
+    },
+    {
+      "path": "app/assets/fonts/Karla-LightItalic.ttf",
+      "sha1": "3466087086827186cbeb37661acadf28b59d6898"
+    },
+    {
+      "path": "app/assets/fonts/Karla-Medium.ttf",
+      "sha1": "3f3f1193b97958591746ab118961a6e2398ddcd2"
+    },
+    {
+      "path": "app/assets/fonts/Karla-MediumItalic.ttf",
+      "sha1": "6d2f1bdf7c76b711c7621f0f3d3ec9653c5cbed4"
+    },
+    {
+      "path": "app/assets/fonts/Karla-Regular.ttf",
+      "sha1": "ced42259c9a4635b123be76f4ba77144c1fef573"
+    },
+    {
+      "path": "app/assets/fonts/Karla-SemiBold.ttf",
+      "sha1": "cded61a36de820c93670ed222b68b0ecddba1628"
+    },
+    {
+      "path": "app/assets/fonts/Karla-SemiBoldItalic.ttf",
+      "sha1": "df6deffdc16fe14667602addfc144f4655a7e06f"
+    },
+    {
+      "path": "app/assets/fonts/LexendDeca-Black.ttf",
+      "sha1": "1d8f0b35298448e00adf67e6fa8e3579be805aed"
+    },
+    {
+      "path": "app/assets/fonts/LexendDeca-Bold.ttf",
+      "sha1": "7ee129b4ba6b0eafef748040d48b7979429f149e"
+    },
+    {
+      "path": "app/assets/fonts/LexendDeca-ExtraBold.ttf",
+      "sha1": "1eddf6fc791679309a67a352a4ef108e9aef028d"
+    },
+    {
+      "path": "app/assets/fonts/LexendDeca-ExtraLight.ttf",
+      "sha1": "fd306ac530940f910327b0a3265463528eaea240"
+    },
+    {
+      "path": "app/assets/fonts/LexendDeca-Light.ttf",
+      "sha1": "30d4f395b9d847fae9174f6ffed7749ea7bd6bfb"
+    },
+    {
+      "path": "app/assets/fonts/LexendDeca-Medium.ttf",
+      "sha1": "ab665bd77c6d32b4ddb555d2508fde44d384c822"
+    },
+    {
+      "path": "app/assets/fonts/LexendDeca-Regular.ttf",
+      "sha1": "68dad5183767d1ebf077be1ddb622a7586f28384"
+    },
+    {
+      "path": "app/assets/fonts/LexendDeca-SemiBold.ttf",
+      "sha1": "f79ea2615b597db5e10776fb1889b783283aeffc"
+    },
+    {
+      "path": "app/assets/fonts/LexendDeca-Thin.ttf",
+      "sha1": "509a4023903b0f0333ed5cdbc6dd74b60f27101f"
+    },
+    {
+      "path": "app/assets/fonts/Quicksand-Bold.ttf",
+      "sha1": "07ca4486c80653a7f3abc18145c2f251d5c9989b"
+    },
+    {
+      "path": "app/assets/fonts/Quicksand-Light.ttf",
+      "sha1": "0d6fe8746125375ffd3ea4de6ecf062643a65c52"
+    },
+    {
+      "path": "app/assets/fonts/Quicksand-Medium.ttf",
+      "sha1": "9cbdd6785519aa2d85ee58cb5101ea9dbff8652f"
+    },
+    {
+      "path": "app/assets/fonts/Quicksand-Regular.ttf",
+      "sha1": "ba6e4d47926d643a8a4b509b193b3a87c3ea385d"
+    },
+    {
+      "path": "app/assets/fonts/Quicksand-SemiBold.ttf",
+      "sha1": "1f5c9cf95379bef6cee5f2a7deb393b157c91f4e"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-Black.ttf",
+      "sha1": "2e9fabee5054e4cb3ac1e90826e897e8e17b1e77"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-BlackItalic.ttf",
+      "sha1": "902d3529d6d0de3a6630bfa7fe87cdf8f1e7f43d"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-Bold.ttf",
+      "sha1": "cc46ab0e6ad07ff446bd94d8843b0fc971b9d9f1"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-BoldItalic.ttf",
+      "sha1": "1b0d307c20f15fb375f68b291747b675bcb29c5b"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-ExtraBold.ttf",
+      "sha1": "3f524ca46a95dbebb0a48e87eb10ff8b6a953ee5"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-ExtraBoldItalic.ttf",
+      "sha1": "f1295acf7047a4f9b6bfa36bdaffa1202c89e3c6"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-ExtraLight.ttf",
+      "sha1": "6cf6d73c014425addaace5a8e114cc604d3bdf58"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-ExtraLightItalic.ttf",
+      "sha1": "2125d8e8935a8854fed50aa770ba87a342e72abd"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-Italic.ttf",
+      "sha1": "8d500b9e948a3647bc5542c0bd3b93ba56abbf83"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-Light.ttf",
+      "sha1": "4e6f99295a5c73dba5676197b15e563912b27c53"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-LightItalic.ttf",
+      "sha1": "7166a144e4b92601f54ecb7d9125960368d588b3"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-Medium.ttf",
+      "sha1": "83eb79459a8e39765bbcf9716712b6c6d15dcbbe"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-MediumItalic.ttf",
+      "sha1": "db751d0493d8dd8735edf7c956db27cd6ad74aac"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-Regular.ttf",
+      "sha1": "9251a4dbc1de55e1120a094dc2c721b4d75518c2"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-SemiBold.ttf",
+      "sha1": "7a5ca03083f0c8d402d3bd07e2925d7668fc7510"
+    },
+    {
+      "path": "app/assets/fonts/SourceSans3-SemiBoldItalic.ttf",
+      "sha1": "a69a6ebf6153caffd07c7b80a8de4f8ba140aeac"
+    }
+  ]
+}
