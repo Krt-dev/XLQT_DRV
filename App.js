@@ -2,6 +2,8 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { Provider } from 'react-redux';
+import { store } from './src/store';
 
 import HomeScreen from './src/screens/HomeScreen.js';
 import MapScreen from './src/screens/MapScreen.js';
@@ -34,7 +36,11 @@ const getTabBarIcon = (route, focused) => ({ size }) => {
 
 const HomeStack = () => (
   <Stack.Navigator>
-    <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+    <Stack.Screen
+      name="HomeScreen"
+      component={HomeScreen}
+      options={{ headerShown: false }}
+    />
     <Stack.Screen
       name="DeliveryHistory"
       component={DeliveryHistoryScreen}
@@ -43,7 +49,8 @@ const HomeStack = () => (
         headerStyle: { backgroundColor: '#1882A1' },
         headerTintColor: '#FFF',
         headerTitleAlign: 'center',
-      }} />
+      }}
+    />
     <Stack.Screen
       name="LogScreen"
       component={LogScreen}
@@ -52,11 +59,12 @@ const HomeStack = () => (
         headerStyle: { backgroundColor: '#1882A1' },
         headerTintColor: '#FFF',
         headerTitleAlign: 'center',
-      }} />
+      }}
+    />
   </Stack.Navigator>
 );
 
-export default function App() {
+const Navigation = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -73,7 +81,12 @@ export default function App() {
       </Tab.Navigator>
     </NavigationContainer>
   );
+};
+
+export default function App() {
+  return (
+    <Provider store={store}>
+      <Navigation />
+    </Provider>
+  );
 }
-
-
-

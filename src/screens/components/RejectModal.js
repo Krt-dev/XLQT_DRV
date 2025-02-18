@@ -1,36 +1,57 @@
 
-import React, { useState } from 'react';
-import {
-    View,
-    Text,
-    Modal,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    Image,
-} from 'react-native';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { deliveryActions } from '../../store/actions';
 
-const RejectModal = ({ visible, onClose, onSubmit, rejectionReason, setRejectionReason, deliveryItem }) => {
-    const [attachment, setAttachment] = useState(null);
-    const maxCharacters = 200;
+const RejectModal = ({ visible, onClose }) => {
+    const dispatch = useDispatch();
+    const { rejectionData } = useSelector(state => state.deliveries);
+
+    const deliveryItem = useSelector(state =>
+        state.deliveries.items.find(item => item.id === rejectionData?.deliveryId)
+    );
 
     const handleAttachment = () => {
         launchImageLibrary({ mediaType: 'photo', quality: 0.5 }, (response) => {
-            if (response.didCancel) {
-                console.log('User canceled image picker');
-            } else if (response.errorCode) {
-                console.log('ImagePicker Error: ', response.errorMessage);
-            } else {
-                setAttachment(response.assets[0].uri);
+            if (!response.didCancel && !response.errorCode) {
+                dispatch(deliveryActions.setRejectionData({
+                    ...rejectionData,
+                    attachment: response.assets[0].uri,
+                }));
             }
         });
     };
 
     const handleUnattach = () => {
-        setAttachment(null);
+        dispatch(deliveryActions.setRejectionData({
+            ...rejectionData,
+            attachment: null,
+        }));
     };
+
+    const handleReasonChange = (text) => {
+        dispatch(deliveryActions.setRejectionData({
+            ...rejectionData,
+            reason: text,
+        }));
+    };
+
+    const handleSubmit = () => {
+        dispatch(deliveryActions.rejectDelivery(
+            rejectionData.deliveryId,
+            rejectionData.reason,
+            rejectionData.attachment
+        ));
+        dispatch(deliveryActions.clearRejectionData());
+        onClose();
+    };
+
+    const maxCharacters = 200;
+    const rejectionReason = rejectionData?.reason || '';
+    const attachment = rejectionData?.attachment || null;
 
     return (
         <Modal
@@ -63,7 +84,7 @@ const RejectModal = ({ visible, onClose, onSubmit, rejectionReason, setRejection
                         placeholder="Note"
                         placeholderTextColor="#A6A6A6"
                         value={rejectionReason}
-                        onChangeText={setRejectionReason}
+                        onChangeText={handleReasonChange}
                         maxLength={maxCharacters}
                         multiline
                     />
@@ -94,7 +115,7 @@ const RejectModal = ({ visible, onClose, onSubmit, rejectionReason, setRejection
                         <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
                             <Text style={styles.buttonText}>Cancel</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.button, styles.submitButton]} onPress={onSubmit}>
+                        <TouchableOpacity style={[styles.button, styles.submitButton]} onPress={handleSubmit}>
                             <Text style={styles.buttonText}>Submit</Text>
                         </TouchableOpacity>
                     </View>
@@ -103,6 +124,7 @@ const RejectModal = ({ visible, onClose, onSubmit, rejectionReason, setRejection
         </Modal>
     );
 };
+
 
 const styles = StyleSheet.create({
     modalOverlay: {

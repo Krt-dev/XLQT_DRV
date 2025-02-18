@@ -1,53 +1,63 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState, useRef } from 'react';
-import { View, TextInput, StyleSheet, Dimensions } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, TextInput, StyleSheet } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import { mapActions, deliveryActions } from '../store/actions';
 import { DELIVERY_ITEMS } from './constants/dataDelivery';
 import CustomMarker from './components/customMarker';
 import TaskSlider from './components/TaskSlider';
-import MapBottomCards from './components/MapBottomCards';
-
-
 
 const MapScreen = () => {
-  const [zoomLevel, setZoomLevel] = useState(0.015);
-  const mapRef = useRef(null);
-  const location = { latitude: 37.78825, longitude: -122.4324 };
+  const dispatch = useDispatch();
+  const { zoomLevel, region, searchQuery } = useSelector(state => state.map);
+  const { items: deliveryItems, selectedDeliveryId } = useSelector(state => state.deliveries);
+
+  useEffect(() => {
+    dispatch(deliveryActions.setDeliveryItems(DELIVERY_ITEMS));
+  }, [dispatch]);
 
   const onStartTrip = (item) => {
-    console.log('Start Trip clicked for:', item);
-    // Add your logic for starting the trip
+    dispatch(deliveryActions.startDelivery(item.id));
   };
 
   const onReject = (item) => {
-    console.log('Reject clicked for:', item);
-    // Add your logic for rejecting the trip
+    dispatch(deliveryActions.setRejectionData({ deliveryId: item.id }));
   };
 
-  const initialRegion = {
-    latitude: 37.78825,
-    longitude: -122.4324,
-    latitudeDelta: zoomLevel,
-    longitudeDelta: zoomLevel * (16 / 9),
+  const onRegionChangeComplete = (newRegion) => {
+    dispatch(mapActions.setZoomLevel(newRegion.latitudeDelta));
+    dispatch(mapActions.updateRegion(newRegion));
   };
 
-  const onRegionChangeComplete = (region) => {
-    setZoomLevel(region.latitudeDelta);
+  const onMarkerPress = (deliveryId) => {
+    dispatch(deliveryActions.selectDelivery(deliveryId));
+    dispatch(mapActions.setSelectedMarker(deliveryId));
+  };
+
+  const onSearchChange = (text) => {
+    dispatch(mapActions.setSearchQuery(text));
   };
 
   return (
     <View style={styles.container}>
       <MapView
-        ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
         showsCompass={false}
-        initialRegion={initialRegion}
+        initialRegion={region}
         onRegionChangeComplete={onRegionChangeComplete}
       >
-        <CustomMarker coordinate={location} label="1" zoomLevel={zoomLevel} />
+        {deliveryItems.map((item) => (
+          <CustomMarker
+            key={item.id}
+            coordinate={item.routeCoordinates[0]}
+            label={item.id}
+            zoomLevel={zoomLevel}
+            onPress={() => onMarkerPress(item.id)}
+          />
+        ))}
       </MapView>
       <View style={styles.searchBox}>
         <Icon name="magnify" size={30} color="#1ABDD4" />
@@ -56,18 +66,18 @@ const MapScreen = () => {
           placeholderTextColor="#A6A6A6"
           autoCapitalize="none"
           style={{ flex: 1, padding: 0, color: '#000' }}
+          value={searchQuery}
+          onChangeText={onSearchChange}
         />
       </View>
       <TaskSlider
-        deliveryItems={DELIVERY_ITEMS}
+        deliveryItems={deliveryItems}
         onStartTrip={onStartTrip}
         onReject={onReject}
       />
-      {/* <MapBottomCards /> */}
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
