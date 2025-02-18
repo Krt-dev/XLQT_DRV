@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -6,25 +7,89 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
+    Image,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { launchImageLibrary } from 'react-native-image-picker';
 
-const RejectModal = ({ visible, onClose, onSubmit, rejectionReason, setRejectionReason }) => {
+const RejectModal = ({ visible, onClose, onSubmit, rejectionReason, setRejectionReason, deliveryItem }) => {
+    const [attachment, setAttachment] = useState(null);
+    const maxCharacters = 200;
+
+    const handleAttachment = () => {
+        launchImageLibrary({ mediaType: 'photo', quality: 0.5 }, (response) => {
+            if (response.didCancel) {
+                console.log('User canceled image picker');
+            } else if (response.errorCode) {
+                console.log('ImagePicker Error: ', response.errorMessage);
+            } else {
+                setAttachment(response.assets[0].uri);
+            }
+        });
+    };
+
+    const handleUnattach = () => {
+        setAttachment(null);
+    };
+
     return (
         <Modal
-            animationType="slide"
+            animationType="fade"
             transparent={true}
             visible={visible}
             onRequestClose={onClose}
         >
             <View style={styles.modalOverlay}>
                 <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Enter Rejection Reason</Text>
+                    <Text style={styles.modalTitle}>Cancel Trip</Text>
+                    <Text style={styles.storeTitle}>{deliveryItem?.store}</Text>
+                    <View style={styles.infoRow}>
+                        <Icon name="calendar" size={13} color="#A6A6A6" />
+                        <Text style={styles.details}>{deliveryItem?.date}</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                        <Icon name="map-marker" size={13} color="#A6A6A6" />
+                        <Text style={styles.details}>{deliveryItem?.location}</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                        <Icon name="clock-outline" size={13} color="#A6A6A6" />
+                        <Text style={styles.details}>{deliveryItem?.time}</Text>
+                    </View>
+                    <Text style={styles.characterCount}>
+                        {rejectionReason.length} / {maxCharacters} characters
+                    </Text>
                     <TextInput
                         style={styles.input}
-                        placeholder="Reason for rejecting"
+                        placeholder="Note"
+                        placeholderTextColor="#A6A6A6"
                         value={rejectionReason}
                         onChangeText={setRejectionReason}
+                        maxLength={maxCharacters}
+                        multiline
                     />
+
+                    {!attachment && (
+                        <TouchableOpacity
+                            style={styles.attachmentContainer}
+                            onPress={handleAttachment}
+                        >
+                            <Icon name="paperclip" size={24} color="#1ABDD4" />
+                            <Text style={styles.attachmentText}>Add an attachment</Text>
+                        </TouchableOpacity>
+                    )}
+
+                    {attachment && (
+                        <View style={styles.imageWrapper}>
+                            <Image source={{ uri: attachment }} style={styles.attachedImage} />
+                            <TouchableOpacity
+                                style={styles.unattachButton}
+                                onPress={handleUnattach}
+                            >
+                                <Icon name="close-circle" size={24} color="white" />
+                            </TouchableOpacity>
+                        </View>
+                    )}
+
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
                             <Text style={styles.buttonText}>Cancel</Text>
@@ -41,13 +106,14 @@ const RejectModal = ({ visible, onClose, onSubmit, rejectionReason, setRejection
 
 const styles = StyleSheet.create({
     modalOverlay: {
-        flex: 1,
+        width: '100%',
+        height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContainer: {
-        width: '80%',
+        width: '90%',
         backgroundColor: 'white',
         padding: 20,
         borderRadius: 10,
@@ -55,8 +121,13 @@ const styles = StyleSheet.create({
     },
     modalTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
         marginBottom: 10,
+        fontFamily: 'LexendDeca-SemiBold',
+    },
+    storeTitle: {
+        fontSize: 12,
+        color: 'black',
+        fontFamily: 'LexendDeca-SemiBold',
     },
     input: {
         borderWidth: 1,
@@ -64,7 +135,76 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         marginBottom: 10,
+        marginTop: 10,
         width: '100%',
+        height: 80,
+
+    },
+    infoRow: {
+        flexDirection: 'row',
+        marginTop: 5,
+        paddingLeft: 5,
+        paddingRight: 5,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    details: {
+        fontSize: 10,
+        color: '#A6A6A6',
+        marginLeft: 5,
+        flex: 1,
+    },
+    characterCount: {
+        fontSize: 10,
+        color: '#A6A6A6',
+        textAlign: 'right',
+    },
+    attachmentButton: {
+        height: 90,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingLeft: 10,
+        paddingRight: 10,
+        justifyContent: 'center',
+        marginBottom: 10,
+    },
+    attachButton: {
+        backgroundColor: '#1ABDD4',
+        marginTop: 10,
+    },
+    attachmentContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 12,
+        backgroundColor: '#F5F5F5',
+        borderRadius: 8,
+        marginBottom: 16,
+    },
+    attachmentText: {
+        color: '#1ABDD4',
+        marginLeft: 8,
+        fontSize: 14,
+        fontFamily: 'LexendDeca-Regular',
+    },
+    imageWrapper: {
+        position: 'relative',
+        marginBottom: 16,
+    },
+    attachedImage: {
+        width: '100%',
+        height: 200,
+        borderRadius: 8,
+        backgroundColor: '#F5F5F5',
+    },
+    unattachButton: {
+        position: 'absolute',
+        top: -12,
+        right: -12,
+        backgroundColor: '#FF3B30',
+        borderRadius: 20,
+        padding: 4,
+        elevation: 3,
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -73,21 +213,24 @@ const styles = StyleSheet.create({
     },
     button: {
         flex: 1,
-        padding: 10,
-        borderRadius: 5,
+        padding: 12,
+        borderRadius: 8,
         alignItems: 'center',
         marginHorizontal: 5,
     },
     cancelButton: {
-        backgroundColor: '#ccc',
+        backgroundColor: '#E5E5E5',
     },
     submitButton: {
         backgroundColor: '#1ABDD4',
     },
     buttonText: {
         color: 'white',
-        fontWeight: 'bold',
+        fontFamily: 'LexendDeca-Medium',
+        fontSize: 14,
     },
+
+
 });
 
 export default RejectModal;

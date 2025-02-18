@@ -53,6 +53,7 @@ const TaskSlider = ({ deliveryItems, onStartTrip, onReject }) => {
     const handleReject = (item) => {
         setSelectedItem(item);
         setModalVisible(true);
+        onReject(item);
     };
 
     const submitRejection = () => {
@@ -76,6 +77,7 @@ const TaskSlider = ({ deliveryItems, onStartTrip, onReject }) => {
                 onSubmit={submitRejection}
                 rejectionReason={rejectionReason}
                 setRejectionReason={setRejectionReason}
+                deliveryItem={selectedItem}
             />
         </View>
     );
