@@ -2,16 +2,20 @@ import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
 
 const ProcessScreen = ({ route }) => {
-    const { itemId } = route.params;  // Access the passed itemId
+    const { itemId } = route.params || {};  // Fallback to an empty object if route.params is undefined
 
     useEffect(() => {
-        // You can use the itemId here, for example, fetching data based on it
-        console.log('ProcessScreen received itemId:', itemId);
+        if (itemId) {
+            // Use the itemId for any fetching or logic
+            console.log('ProcessScreen received itemId:', itemId);
+        } else {
+            console.warn('No itemId passed to ProcessScreen');
+        }
     }, [itemId]);
 
     return (
         <View>
-            <Text>Processing item with ID: {itemId}</Text>
+            <Text>Processing item with ID: {itemId ? itemId : 'No Item ID'}</Text>
         </View>
     );
 };

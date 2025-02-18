@@ -53,6 +53,8 @@ const Card = ({ item, onStartTrip, onReject }) => {
 const TaskSlider = ({ deliveryItems }) => {
     const dispatch = useDispatch();
     const { rejectionData } = useSelector(state => state.deliveries);
+    const navigation = useNavigation();  // Initialize useNavigation hook
+
 
     const handleReject = (item) => {
         console.log('Reject button pressed for:', item);
@@ -61,7 +63,8 @@ const TaskSlider = ({ deliveryItems }) => {
 
     const handleStartTrip = (item) => {
         console.log('Start Trip button pressed for:', item);
-        dispatch(deliveryActions.startDelivery(item.id));
+        dispatch(deliveryActions.startDelivery({ deliveryId: item.id }));
+        navigation.navigate('Home', { screen: 'ProcessScreen' });
     };
 
     const submitRejection = () => {

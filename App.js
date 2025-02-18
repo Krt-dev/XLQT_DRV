@@ -63,7 +63,7 @@ const HomeStack = () => (
       }}
     />
     <Stack.Screen
-      name="ProcessScreen" // Add ProcessScreen to the stack
+      name="ProcessScreen"
       component={ProcessScreen}
       options={{
         title: 'Process',
@@ -74,6 +74,7 @@ const HomeStack = () => (
     />
   </Stack.Navigator>
 );
+
 
 const Navigation = () => {
   return (
