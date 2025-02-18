@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { DELIVERY_ITEMS } from '../constants/dataDelivery';
@@ -19,88 +19,82 @@ export default function TaskCards() {
         }
     };
 
+    // Get the first delivery item
+    const currentItem = DELIVERY_ITEMS[0];
+
+    if (!currentItem) {
+        return <Text style={styles.noDataText}>No deliveries available</Text>;
+    }
+
     return (
-        <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.sliderContainer}
-        >
-            {DELIVERY_ITEMS.slice(0, 3).map((item) => (
-                <TouchableOpacity
-                    key={item.id}
-                    style={styles.deliveryCard}
-                    onPress={() => console.log('Delivery card pressed:', item.id)}
-                >
-                    <View style={styles.cardHeader}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Icon name="truck-fast-outline" size={30} color="#1882A1" />
-                            <Text style={styles.storeNameText}>
-                                {item.store}
-                            </Text>
+        <View style={styles.container}>
+            <TouchableOpacity
+                style={styles.deliveryCard}
+                onPress={() => console.log('Delivery card pressed:', currentItem.id)}
+            >
+                <View style={styles.cardHeader}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Icon name="truck-fast-outline" size={30} color="#1882A1" />
+                        <Text style={styles.storeNameText}>
+                            {currentItem.store}
+                        </Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={[
+                            styles.statusIndicator,
+                            { backgroundColor: getStatusColor(currentItem.status) },
+                        ]} />
+                        <Text style={styles.statusText}>{currentItem.status}</Text>
+                    </View>
+                </View>
+                <View style={styles.cardContent}>
+                    <View style={styles.mainInfoRow}>
+                        <Icon name="map-marker" size={16} color="#0CC2DC" />
+                        <Text style={styles.mainInfoText}>{currentItem.location}</Text>
+                    </View>
+                    <View style={styles.mainInfoRow}>
+                        <Icon name="calendar-month" size={16} color="#0CC2DC" />
+                        <Text style={styles.mainInfoText}>{currentItem.date}</Text>
+                    </View>
+                    <View style={styles.mainInfoRow}>
+                        <Text style={styles.itemsText}>Next Route:</Text>
+                        <Text style={styles.mainInfoText}> {currentItem.nextRoute}</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                        <View style={styles.timeContainer}>
+                            <Icon name="clock-outline" size={14} color="#666" />
+                            <Text style={styles.timeText}>{currentItem.time}</Text>
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <View style={[
-                                styles.statusIndicator,
-                                { backgroundColor: getStatusColor(item.status) },
-                            ]} />
-                            <Text style={styles.statusText}>{item.status}</Text>
+                        <View style={styles.itemsContainer}>
+                            <Icon name="routes" size={14} color="#666" />
+                            <Text style={styles.itemsText}>{currentItem.routes} routes</Text>
                         </View>
                     </View>
-                    <View style={styles.cardContent}>
-                        <View style={styles.mainInfoRow}>
-                            <Icon name="map-marker" size={16} color="#0CC2DC" />
-                            <Text style={styles.mainInfoText}>{item.location}</Text>
-                        </View>
-                        <View style={styles.mainInfoRow}>
-                            <Icon name="calendar-month" size={16} color="#0CC2DC" />
-                            <Text style={styles.mainInfoText}>{item.date}</Text>
-                        </View>
-                        <View style={styles.mainInfoRow}>
-                            <Text style={styles.itemsText}>
-                                Next Route:
-                            </Text>
-                            <Text style={styles.mainInfoText}> {item.nextRoute}</Text>
-                        </View>
-                        <View style={styles.infoRow}>
-                            <View style={styles.timeContainer}>
-                                <Icon name="clock-outline" size={14} color="#666" />
-                                <Text style={styles.timeText}>{item.time}</Text>
-                            </View>
-                            <View style={styles.itemsContainer}>
-                                <Icon name="routes" size={14} color="#666" />
-                                <Text style={styles.itemsText}>{item.routes} routes</Text>
-                            </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            ))}
-        </ScrollView>
+                </View>
+            </TouchableOpacity>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    sliderContainer: {
+    container: {
+        flex: 1,
+        width: '100%',
         paddingHorizontal: 15,
-        height: 155,
-        alignContent: 'center',
+        justifyContent: 'center', // Centers the card vertically
+        alignItems: 'center', // Centers the card horizontally
     },
     deliveryCard: {
-        width: 340,
-        height: 140,
         backgroundColor: '#DEFBFF',
         borderRadius: 10,
-        marginRight: 15,
-        marginTop: 5,
         padding: 12,
         shadowColor: '#000',
-        shadowOffset: {
-            width: 2,
-            height: 2,
-        },
+        shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 20,
         elevation: 5,
         flex: 1,
+        width: '100%',
     },
     cardHeader: {
         flexDirection: 'row',
@@ -165,5 +159,11 @@ const styles = StyleSheet.create({
     storeNameText: {
         fontFamily: 'LexendDeca-SemiBold',
         marginLeft: 8,
+    },
+    noDataText: {
+        textAlign: 'center',
+        marginTop: 20,
+        fontSize: 16,
+        color: '#888',
     },
 });

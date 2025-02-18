@@ -98,7 +98,7 @@ const HomeScreen = ({ navigation }) => {
                         Current Delivery
                     </Text>
                 </View>
-                <View>
+                <View style={styles.deliverySliderContainer}>
                     <DeliverySlider />
                 </View>
                 <View style={{ alignItems: 'center', paddingTop: 10 }}>
@@ -253,5 +253,8 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontSize: 10,
         fontFamily: 'Karla-Bold',
+    },
+    deliverySliderContainer: {
+        alignItems: 'center',
     },
 });

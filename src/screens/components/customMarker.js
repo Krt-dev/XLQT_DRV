@@ -24,8 +24,8 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     markerImage: {
-        width: 30,
-        height: 30,
+        width: 31,
+        height: 31,
         resizeMode: 'contain',
     },
     markerText: {

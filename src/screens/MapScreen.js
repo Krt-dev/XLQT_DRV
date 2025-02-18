@@ -4,18 +4,28 @@ import { View, TextInput, StyleSheet, Dimensions } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import { DELIVERY_ITEMS } from './constants/dataDelivery';
 import CustomMarker from './components/customMarker';
 import TaskSlider from './components/TaskSlider';
+import MapBottomCards from './components/MapBottomCards';
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = width * 0.8;
+
 
 const MapScreen = () => {
   const [zoomLevel, setZoomLevel] = useState(0.015);
   const mapRef = useRef(null);
   const location = { latitude: 37.78825, longitude: -122.4324 };
 
-  // Initial region - use this for the first render
+  const onStartTrip = (item) => {
+    console.log('Start Trip clicked for:', item);
+    // Add your logic for starting the trip
+  };
+
+  const onReject = (item) => {
+    console.log('Reject clicked for:', item);
+    // Add your logic for rejecting the trip
+  };
+
   const initialRegion = {
     latitude: 37.78825,
     longitude: -122.4324,
@@ -23,9 +33,7 @@ const MapScreen = () => {
     longitudeDelta: zoomLevel * (16 / 9),
   };
 
-  // Use this function to update zoom level without re-centering the map
   const onRegionChangeComplete = (region) => {
-    // Only update the zoom level, don't force the map to re-render with a new region
     setZoomLevel(region.latitudeDelta);
   };
 
@@ -35,6 +43,7 @@ const MapScreen = () => {
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         style={styles.map}
+        showsCompass={false}
         initialRegion={initialRegion}
         onRegionChangeComplete={onRegionChangeComplete}
       >
@@ -49,7 +58,12 @@ const MapScreen = () => {
           style={{ flex: 1, padding: 0, color: '#000' }}
         />
       </View>
-      <TaskSlider />
+      <TaskSlider
+        deliveryItems={DELIVERY_ITEMS}
+        onStartTrip={onStartTrip}
+        onReject={onReject}
+      />
+      {/* <MapBottomCards /> */}
     </View>
   );
 };
@@ -58,6 +72,8 @@ const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     flex: 1,
+    position: 'relative',
+
   },
   map: {
     ...StyleSheet.absoluteFillObject,
@@ -81,6 +97,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 15,
+    zIndex: 1,
   },
   scrollView: {
     position: 'absolute',
@@ -89,7 +106,7 @@ const styles = StyleSheet.create({
   },
   card: {
     height: 133,
-    width: CARD_WIDTH,
+    // width: CARD_WIDTH,
     backgroundColor: '#fff',
     borderRadius: 10,
     padding: 15,
