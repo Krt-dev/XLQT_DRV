@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     View,
     Text,
@@ -9,6 +9,11 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import RejectModal from './RejectModal';
+import { useNavigation } from '@react-navigation/native';
+import { deliveryActions } from '../../store/actions';
+import { useSelector, useDispatch } from 'react-redux';
+
+
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.8;
@@ -45,43 +50,60 @@ const Card = ({ item, onStartTrip, onReject }) => {
     );
 };
 
-const TaskSlider = ({ deliveryItems, onStartTrip, onReject }) => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [rejectionReason, setRejectionReason] = useState('');
-    const [selectedItem, setSelectedItem] = useState(null);
+const TaskSlider = ({ deliveryItems }) => {
+    const dispatch = useDispatch();
+    const { rejectionData } = useSelector(state => state.deliveries);
 
     const handleReject = (item) => {
-        setSelectedItem(item);
-        setModalVisible(true);
-        onReject(item);
+        console.log('Reject button pressed for:', item);
+        dispatch(deliveryActions.setRejectionData({ deliveryId: item.id }));
+    };
+
+    const handleStartTrip = (item) => {
+        console.log('Start Trip button pressed for:', item);
+        dispatch(deliveryActions.startDelivery(item.id));
     };
 
     const submitRejection = () => {
-        console.log('Rejection reason:', rejectionReason);
-        console.log('Rejected item:', selectedItem);
-        setModalVisible(false);
-        setRejectionReason('');
+        console.log('Rejection reason:', rejectionData?.reason);
+        console.log('Rejected item:', rejectionData?.deliveryId);
+        dispatch(deliveryActions.rejectDelivery(
+            rejectionData.deliveryId,
+            rejectionData.reason,
+            rejectionData.attachment
+        ));
+        dispatch(deliveryActions.clearRejectionData());
     };
 
     return (
         <View style={styles.container}>
-            <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} scrollEventThrottle={16} snapToInterval={CARD_WIDTH + 20} decelerationRate="fast">
+            <ScrollView
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                scrollEventThrottle={16}
+                snapToInterval={CARD_WIDTH + 20}
+                decelerationRate="fast"
+            >
                 {deliveryItems.map((item) => (
-                    <Card key={item.id} item={item} onStartTrip={onStartTrip} onReject={handleReject} />
+                    <Card
+                        key={item.id}
+                        item={item}
+                        onStartTrip={() => handleStartTrip(item)}
+                        onReject={() => handleReject(item)}
+                    />
                 ))}
             </ScrollView>
 
             <RejectModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
+                visible={!!rejectionData.deliveryId}
+                onClose={() => dispatch(deliveryActions.clearRejectionData())}
                 onSubmit={submitRejection}
-                rejectionReason={rejectionReason}
-                setRejectionReason={setRejectionReason}
-                deliveryItem={selectedItem}
             />
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {

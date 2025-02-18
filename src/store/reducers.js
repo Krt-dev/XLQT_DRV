@@ -4,6 +4,7 @@ import { TYPES } from '../store/type';
 const initialDeliveryState = {
     items: [],
     selectedDeliveryId: null,
+    activeTripId: null,
     rejectionData: {
         deliveryId: null,
         reason: '',

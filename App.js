@@ -9,6 +9,7 @@ import HomeScreen from './src/screens/HomeScreen.js';
 import MapScreen from './src/screens/MapScreen.js';
 import DeliveryHistoryScreen from './src/screens/DeliveryHistoryScreen.js';
 import LogScreen from './src/screens/LogsScreen.js';
+import ProcessScreen from './src/screens/ProcessScreen.js';
 
 import ChartIconActive from './src/assets/icons/chart-mixed.svg';
 import ChartIconInactive from './src/assets/icons/chart-mixed_Inactive.svg';
@@ -56,6 +57,16 @@ const HomeStack = () => (
       component={LogScreen}
       options={{
         title: 'Log History',
+        headerStyle: { backgroundColor: '#1882A1' },
+        headerTintColor: '#FFF',
+        headerTitleAlign: 'center',
+      }}
+    />
+    <Stack.Screen
+      name="ProcessScreen" // Add ProcessScreen to the stack
+      component={ProcessScreen}
+      options={{
+        title: 'Process',
         headerStyle: { backgroundColor: '#1882A1' },
         headerTintColor: '#FFF',
         headerTitleAlign: 'center',

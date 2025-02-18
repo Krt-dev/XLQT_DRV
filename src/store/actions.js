@@ -29,6 +29,11 @@ export const deliveryActions = {
     clearRejectionData: () => ({
         type: TYPES.CLEAR_REJECTION_DATA,
     }),
+
+    setActiveTrip: (deliveryId) => ({
+        type: TYPES.SET_ACTIVE_TRIP,
+        payload: deliveryId,
+    }),
 };
 
 export const mapActions = {
