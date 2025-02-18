@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import RejectModal from './RejectModal';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.8;
@@ -45,13 +46,37 @@ const Card = ({ item, onStartTrip, onReject }) => {
 };
 
 const TaskSlider = ({ deliveryItems, onStartTrip, onReject }) => {
+    const [modalVisible, setModalVisible] = useState(false);
+    const [rejectionReason, setRejectionReason] = useState('');
+    const [selectedItem, setSelectedItem] = useState(null);
+
+    const handleReject = (item) => {
+        setSelectedItem(item);
+        setModalVisible(true);
+    };
+
+    const submitRejection = () => {
+        console.log('Rejection reason:', rejectionReason);
+        console.log('Rejected item:', selectedItem);
+        setModalVisible(false);
+        setRejectionReason('');
+    };
+
     return (
         <View style={styles.container}>
             <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} scrollEventThrottle={16} snapToInterval={CARD_WIDTH + 20} decelerationRate="fast">
                 {deliveryItems.map((item) => (
-                    <Card key={item.id} item={item} onStartTrip={onStartTrip} onReject={onReject} />
+                    <Card key={item.id} item={item} onStartTrip={onStartTrip} onReject={handleReject} />
                 ))}
             </ScrollView>
+
+            <RejectModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                onSubmit={submitRejection}
+                rejectionReason={rejectionReason}
+                setRejectionReason={setRejectionReason}
+            />
         </View>
     );
 };
@@ -129,6 +154,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         fontSize: 14,
     },
+
 });
 
 export default TaskSlider;
