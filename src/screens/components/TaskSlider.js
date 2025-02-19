@@ -104,7 +104,9 @@ const TaskSlider = ({ deliveryItems }) => {
     const handleStartTrip = (item) => {
         console.log('Start Trip button pressed for:', item);
         dispatch(deliveryActions.startDelivery({ deliveryId: item.id }));
-        navigation.navigate('Home', { screen: 'ProcessScreen', params: { itemId: item.id } });
+        // navigation.navigate('Home', { screen: 'ProcessScreen', params: { itemId: item.id } });
+        navigation.navigate('ProcessScreen', { itemId: item.id });
+
     };
 
     const submitRejection = () => {

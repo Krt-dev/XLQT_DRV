@@ -37,11 +37,7 @@ const getTabBarIcon = (route, focused) => ({ size }) => {
 
 const HomeStack = () => (
   <Stack.Navigator>
-    <Stack.Screen
-      name="HomeScreen"
-      component={HomeScreen}
-      options={{ headerShown: false }}
-    />
+    <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
     <Stack.Screen
       name="DeliveryHistory"
       component={DeliveryHistoryScreen}
@@ -62,6 +58,12 @@ const HomeStack = () => (
         headerTitleAlign: 'center',
       }}
     />
+  </Stack.Navigator>
+);
+
+const MapStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="MapScreen" component={MapScreen} options={{ headerShown: false }} />
     <Stack.Screen
       name="ProcessScreen"
       component={ProcessScreen}
@@ -75,25 +77,26 @@ const HomeStack = () => (
   </Stack.Navigator>
 );
 
+const TabNavigator = () => (
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ focused, size }) => getTabBarIcon(route, focused)({ size }),
+      tabBarActiveTintColor: '#0CC2DC',
+      tabBarInactiveTintColor: 'gray',
+      tabBarStyle: { backgroundColor: '#ffff' },
+      headerShown: false,
+    })}
+  >
+    <Tab.Screen name="Home" component={HomeStack} />
+    <Tab.Screen name="Map" component={MapStack} />
+  </Tab.Navigator>
+);
 
-const Navigation = () => {
-  return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, size }) => getTabBarIcon(route, focused)({ size }),
-          tabBarActiveTintColor: '#0CC2DC',
-          tabBarInactiveTintColor: 'gray',
-          tabBarStyle: { backgroundColor: '#ffff' },
-          headerShown: false,
-        })}
-      >
-        <Tab.Screen name="Home" component={HomeStack} />
-        <Tab.Screen name="Map" component={MapScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
-  );
-};
+const Navigation = () => (
+  <NavigationContainer>
+    <TabNavigator />
+  </NavigationContainer>
+);
 
 export default function App() {
   return (

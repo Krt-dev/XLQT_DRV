@@ -14,7 +14,6 @@ const DetailsModal = ({ visible, item, onClose }) => {
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
                     <Text style={styles.modalTitle}>{item.store}</Text>
-
                     <Text style={styles.modalText}>Date: {item.date}</Text>
                     <Text style={styles.modalText}>Location: {item.location}</Text>
                     <Text style={styles.modalText}>Time: {item.time}</Text>
@@ -22,8 +21,6 @@ const DetailsModal = ({ visible, item, onClose }) => {
                     <Text style={styles.modalText}>Body Number: {item.bodyNumber}</Text>
                     <Text style={styles.modalText}>Driver: {item.driver}</Text>
                     <Text style={styles.modalText}>Plate Number: {item.plateNumber}</Text>
-
-
 
 
                     <TouchableOpacity style={styles.closeButton} onPress={onClose}>
