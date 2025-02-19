@@ -1,17 +1,25 @@
 import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
-const ProcessScreen = ({ route }) => {
-    const { itemId } = route.params || {};  // Fallback to an empty object if route.params is undefined
+const ProcessScreen = ({ navigation, route }) => {
+    const { itemId } = route.params || {};
 
     useEffect(() => {
         if (itemId) {
-            // Use the itemId for any fetching or logic
             console.log('ProcessScreen received itemId:', itemId);
         } else {
             console.warn('No itemId passed to ProcessScreen');
         }
     }, [itemId]);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            return () => {
+                navigation.navigate('Map');
+            };
+        }, [navigation])
+    );
 
     return (
         <View>
@@ -21,3 +29,5 @@ const ProcessScreen = ({ route }) => {
 };
 
 export default ProcessScreen;
+
+

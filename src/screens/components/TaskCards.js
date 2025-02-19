@@ -56,10 +56,10 @@ export default function TaskCards() {
                         <Icon name="calendar-month" size={16} color="#0CC2DC" />
                         <Text style={styles.mainInfoText}>{currentItem.date}</Text>
                     </View>
-                    <View style={styles.mainInfoRow}>
+                    {/* <View style={styles.mainInfoRow}>
                         <Text style={styles.itemsText}>Next Route:</Text>
                         <Text style={styles.mainInfoText}> {currentItem.nextRoute}</Text>
-                    </View>
+                    </View> */}
                     <View style={styles.infoRow}>
                         <View style={styles.timeContainer}>
                             <Icon name="clock-outline" size={14} color="#666" />

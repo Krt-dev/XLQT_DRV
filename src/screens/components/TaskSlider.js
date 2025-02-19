@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -12,48 +12,88 @@ import RejectModal from './RejectModal';
 import { useNavigation } from '@react-navigation/native';
 import { deliveryActions } from '../../store/actions';
 import { useSelector, useDispatch } from 'react-redux';
-
+import DetailsModal from './DetailsModal';
 
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.8;
 
+// const Card = ({ item, onStartTrip, onReject }) => {
+//     return (
+//         <View style={styles.card}>
+//             <View style={styles.cardHeader}>
+//                 <Text style={styles.storeName}>{item.store}</Text>
+//             </View>
+
+//             <View style={styles.infoRow}>
+//                 <Icon name="calendar" size={13} color="#A6A6A6" />
+//                 <Text style={styles.details}>{item.date}</Text>
+//             </View>
+//             <View style={styles.infoRow}>
+//                 <Icon name="map-marker" size={13} color="#A6A6A6" />
+//                 <Text style={styles.details}>{item.location}</Text>
+//             </View>
+//             <View style={styles.infoRow}>
+//                 <Icon name="clock-outline" size={13} color="#A6A6A6" />
+//                 <Text style={styles.details}>{item.time}</Text>
+//             </View>
+
+//             <View style={styles.buttonContainer}>
+//                 <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={() => onReject(item)}>
+//                     <Text style={styles.buttonText}>Reject</Text>
+//                 </TouchableOpacity>
+//                 <TouchableOpacity style={[styles.button, styles.startButton]} onPress={() => onStartTrip(item)}>
+//                     <Text style={styles.buttonText}>Start Trip</Text>
+//                 </TouchableOpacity>
+//             </View>
+//         </View>
+//     );
+// };
+
 const Card = ({ item, onStartTrip, onReject }) => {
+    const [modalVisible, setModalVisible] = useState(false);
+
     return (
-        <View style={styles.card}>
-            <View style={styles.cardHeader}>
-                <Text style={styles.storeName}>{item.store}</Text>
-            </View>
+        <>
+            <TouchableOpacity onPress={() => setModalVisible(true)} activeOpacity={0.8}>
+                <View style={styles.card}>
+                    <View style={styles.cardHeader}>
+                        <Text style={styles.storeName}>{item.store}</Text>
+                    </View>
 
-            <View style={styles.infoRow}>
-                <Icon name="calendar" size={13} color="#A6A6A6" />
-                <Text style={styles.details}>{item.date}</Text>
-            </View>
-            <View style={styles.infoRow}>
-                <Icon name="map-marker" size={13} color="#A6A6A6" />
-                <Text style={styles.details}>{item.location}</Text>
-            </View>
-            <View style={styles.infoRow}>
-                <Icon name="clock-outline" size={13} color="#A6A6A6" />
-                <Text style={styles.details}>{item.time}</Text>
-            </View>
+                    <View style={styles.infoRow}>
+                        <Icon name="calendar" size={13} color="#A6A6A6" />
+                        <Text style={styles.details}>{item.date}</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                        <Icon name="map-marker" size={13} color="#A6A6A6" />
+                        <Text style={styles.details}>{item.location}</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                        <Icon name="clock-outline" size={13} color="#A6A6A6" />
+                        <Text style={styles.details}>{item.time}</Text>
+                    </View>
 
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={() => onReject(item)}>
-                    <Text style={styles.buttonText}>Reject</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, styles.startButton]} onPress={() => onStartTrip(item)}>
-                    <Text style={styles.buttonText}>Start Trip</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={() => onReject(item)}>
+                            <Text style={styles.buttonText}>Reject</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.button, styles.startButton]} onPress={() => onStartTrip(item)}>
+                            <Text style={styles.buttonText}>Start Trip</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </TouchableOpacity>
+
+            <DetailsModal visible={modalVisible} item={item} onClose={() => setModalVisible(false)} />
+        </>
     );
 };
 
 const TaskSlider = ({ deliveryItems }) => {
     const dispatch = useDispatch();
     const { rejectionData } = useSelector(state => state.deliveries);
-    const navigation = useNavigation();  // Initialize useNavigation hook
+    const navigation = useNavigation();
 
 
     const handleReject = (item) => {
@@ -64,7 +104,7 @@ const TaskSlider = ({ deliveryItems }) => {
     const handleStartTrip = (item) => {
         console.log('Start Trip button pressed for:', item);
         dispatch(deliveryActions.startDelivery({ deliveryId: item.id }));
-        navigation.navigate('Home', { screen: 'ProcessScreen' });
+        navigation.navigate('Home', { screen: 'ProcessScreen', params: { itemId: item.id } });
     };
 
     const submitRejection = () => {
