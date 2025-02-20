@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React from 'react';
 import {
     View,
     Text,
@@ -10,52 +11,29 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import RejectModal from './RejectModal';
 import { useNavigation } from '@react-navigation/native';
-import { deliveryActions } from '../../store/actions';
+import {
+    setRejectionData,
+    rejectDelivery,
+    startDelivery,
+    clearRejectionData,
+    selectDelivery,
+} from './../../store/deliverySlice';
 import { useSelector, useDispatch } from 'react-redux';
 import DetailsModal from './DetailsModal';
-
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.8;
 
-// const Card = ({ item, onStartTrip, onReject }) => {
-//     return (
-//         <View style={styles.card}>
-//             <View style={styles.cardHeader}>
-//                 <Text style={styles.storeName}>{item.store}</Text>
-//             </View>
-
-//             <View style={styles.infoRow}>
-//                 <Icon name="calendar" size={13} color="#A6A6A6" />
-//                 <Text style={styles.details}>{item.date}</Text>
-//             </View>
-//             <View style={styles.infoRow}>
-//                 <Icon name="map-marker" size={13} color="#A6A6A6" />
-//                 <Text style={styles.details}>{item.location}</Text>
-//             </View>
-//             <View style={styles.infoRow}>
-//                 <Icon name="clock-outline" size={13} color="#A6A6A6" />
-//                 <Text style={styles.details}>{item.time}</Text>
-//             </View>
-
-//             <View style={styles.buttonContainer}>
-//                 <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={() => onReject(item)}>
-//                     <Text style={styles.buttonText}>Reject</Text>
-//                 </TouchableOpacity>
-//                 <TouchableOpacity style={[styles.button, styles.startButton]} onPress={() => onStartTrip(item)}>
-//                     <Text style={styles.buttonText}>Start Trip</Text>
-//                 </TouchableOpacity>
-//             </View>
-//         </View>
-//     );
-// };
-
 const Card = ({ item, onStartTrip, onReject }) => {
-    const [modalVisible, setModalVisible] = useState(false);
+    const dispatch = useDispatch();
+    const selectedDeliveryId = useSelector(state => state.deliveries.selectedDeliveryId);
 
     return (
         <>
-            <TouchableOpacity onPress={() => setModalVisible(true)} activeOpacity={0.8}>
+            <TouchableOpacity
+                onPress={() => dispatch(selectDelivery(item.id))}
+                activeOpacity={0.8}
+            >
                 <View style={styles.card}>
                     <View style={styles.cardHeader}>
                         <Text style={styles.storeName}>{item.store}</Text>
@@ -75,50 +53,70 @@ const Card = ({ item, onStartTrip, onReject }) => {
                     </View>
 
                     <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={() => onReject(item)}>
+                        <TouchableOpacity
+                            style={[styles.button, styles.rejectButton]}
+                            onPress={() => onReject(item)}
+                        >
                             <Text style={styles.buttonText}>Reject</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.button, styles.startButton]} onPress={() => onStartTrip(item)}>
+                        <TouchableOpacity
+                            style={[styles.button, styles.startButton]}
+                            onPress={() => onStartTrip(item)}
+                        >
                             <Text style={styles.buttonText}>Start Trip</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </TouchableOpacity>
 
-            <DetailsModal visible={modalVisible} item={item} onClose={() => setModalVisible(false)} />
+            <DetailsModal
+                visible={selectedDeliveryId === item.id}
+                item={item}
+                onClose={() => dispatch(selectDelivery(null))}
+            />
         </>
     );
 };
 
-const TaskSlider = ({ deliveryItems }) => {
+const TaskSlider = () => {
     const dispatch = useDispatch();
-    const { rejectionData } = useSelector(state => state.deliveries);
     const navigation = useNavigation();
 
+    const deliveryItems = useSelector(state => state.deliveries.items);
+    const rejectionData = useSelector(state => state.deliveries.rejectionData);
+
+    // Add console.log to verify data
+    console.log('TaskSlider deliveryItems:', deliveryItems);
 
     const handleReject = (item) => {
         console.log('Reject button pressed for:', item);
-        dispatch(deliveryActions.setRejectionData({ deliveryId: item.id }));
+        dispatch(setRejectionData({ deliveryId: item.id }));
     };
 
     const handleStartTrip = (item) => {
         console.log('Start Trip button pressed for:', item);
-        dispatch(deliveryActions.startDelivery({ deliveryId: item.id }));
-        // navigation.navigate('Home', { screen: 'ProcessScreen', params: { itemId: item.id } });
+        dispatch(startDelivery(item.id));
         navigation.navigate('ProcessScreen', { itemId: item.id });
-
     };
 
     const submitRejection = () => {
-        console.log('Rejection reason:', rejectionData?.reason);
-        console.log('Rejected item:', rejectionData?.deliveryId);
-        dispatch(deliveryActions.rejectDelivery(
-            rejectionData.deliveryId,
-            rejectionData.reason,
-            rejectionData.attachment
-        ));
-        dispatch(deliveryActions.clearRejectionData());
+        if (!rejectionData) { return; }
+
+        dispatch(rejectDelivery({
+            deliveryId: rejectionData.deliveryId,
+            reason: rejectionData.reason,
+            attachment: rejectionData.attachment,
+        }));
+        dispatch(clearRejectionData());
     };
+
+    if (!deliveryItems || deliveryItems.length === 0) {
+        return (
+            <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+                <Text>No delivery items available</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -129,6 +127,7 @@ const TaskSlider = ({ deliveryItems }) => {
                 scrollEventThrottle={16}
                 snapToInterval={CARD_WIDTH + 20}
                 decelerationRate="fast"
+                style={styles.scrollView}
             >
                 {deliveryItems.map((item) => (
                     <Card
@@ -141,8 +140,8 @@ const TaskSlider = ({ deliveryItems }) => {
             </ScrollView>
 
             <RejectModal
-                visible={!!rejectionData.deliveryId}
-                onClose={() => dispatch(deliveryActions.clearRejectionData())}
+                visible={!!rejectionData?.deliveryId}
+                onClose={() => dispatch(clearRejectionData())}
                 onSubmit={submitRejection}
             />
         </View>

@@ -4,41 +4,59 @@ import { View, TextInput, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { mapActions, deliveryActions } from '../store/actions';
+import {
+  setDeliveryItems,
+  startDelivery,
+  setRejectionData,
+  selectDelivery,
+} from './.././store/deliverySlice';
+import {
+  setZoomLevel,
+  updateRegion,
+  setSelectedMarker,
+  setSearchQuery,
+} from './../store/mapSlice';
+
 import { DELIVERY_ITEMS } from './constants/dataDelivery';
 import CustomMarker from './components/customMarker';
 import TaskSlider from './components/TaskSlider';
 
+// MapScreen.js
 const MapScreen = () => {
   const dispatch = useDispatch();
   const { zoomLevel, region, searchQuery } = useSelector(state => state.map);
   const { items: deliveryItems, selectedDeliveryId } = useSelector(state => state.deliveries);
 
   useEffect(() => {
-    dispatch(deliveryActions.setDeliveryItems(DELIVERY_ITEMS));
+    // Add console.log to verify data
+    console.log('Setting delivery items:', DELIVERY_ITEMS);
+    dispatch(setDeliveryItems(DELIVERY_ITEMS));
   }, [dispatch]);
 
   const onStartTrip = (item) => {
-    dispatch(deliveryActions.startDelivery(item.id));
+    dispatch(startDelivery(item.id));
   };
 
   const onReject = (item) => {
-    dispatch(deliveryActions.setRejectionData({ deliveryId: item.id }));
+    dispatch(setRejectionData({ deliveryId: item.id }));
   };
 
   const onRegionChangeComplete = (newRegion) => {
-    dispatch(mapActions.setZoomLevel(newRegion.latitudeDelta));
-    dispatch(mapActions.updateRegion(newRegion));
+    dispatch(setZoomLevel(newRegion.latitudeDelta));
+    dispatch(updateRegion(newRegion));
   };
 
   const onMarkerPress = (deliveryId) => {
-    dispatch(deliveryActions.selectDelivery(deliveryId));
-    dispatch(mapActions.setSelectedMarker(deliveryId));
+    dispatch(selectDelivery(deliveryId));
+    dispatch(setSelectedMarker(deliveryId));
   };
 
   const onSearchChange = (text) => {
-    dispatch(mapActions.setSearchQuery(text));
+    dispatch(setSearchQuery(text));
   };
+
+  // Add console.log to verify data before render
+  console.log('MapScreen deliveryItems:', deliveryItems);
 
   return (
     <View style={styles.container}>
@@ -49,7 +67,7 @@ const MapScreen = () => {
         initialRegion={region}
         onRegionChangeComplete={onRegionChangeComplete}
       >
-        {deliveryItems.map((item) => (
+        {deliveryItems?.map((item) => (
           <CustomMarker
             key={item.id}
             coordinate={item.routeCoordinates[0]}
@@ -70,11 +88,7 @@ const MapScreen = () => {
           onChangeText={onSearchChange}
         />
       </View>
-      <TaskSlider
-        deliveryItems={deliveryItems}
-        onStartTrip={onStartTrip}
-        onReject={onReject}
-      />
+      <TaskSlider />
     </View>
   );
 };

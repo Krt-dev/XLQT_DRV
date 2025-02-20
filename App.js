@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider } from 'react-redux';
-import { store } from './src/store';
+import { store } from './src/store/store.js';
 
 import HomeScreen from './src/screens/HomeScreen.js';
 import MapScreen from './src/screens/MapScreen.js';

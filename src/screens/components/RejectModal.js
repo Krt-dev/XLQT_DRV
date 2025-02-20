@@ -5,8 +5,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { deliveryActions } from '../../store/actions';
-
+import {
+    setRejectionData,
+    rejectDelivery,
+    clearRejectionData,
+} from './../../store/deliverySlice';
 const RejectModal = ({ visible, onClose }) => {
     const dispatch = useDispatch();
     const { rejectionData } = useSelector(state => state.deliveries);
@@ -18,7 +21,7 @@ const RejectModal = ({ visible, onClose }) => {
     const handleAttachment = () => {
         launchImageLibrary({ mediaType: 'photo', quality: 0.5 }, (response) => {
             if (!response.didCancel && !response.errorCode) {
-                dispatch(deliveryActions.setRejectionData({
+                dispatch(setRejectionData({
                     ...rejectionData,
                     attachment: response.assets[0].uri,
                 }));
@@ -27,26 +30,26 @@ const RejectModal = ({ visible, onClose }) => {
     };
 
     const handleUnattach = () => {
-        dispatch(deliveryActions.setRejectionData({
+        dispatch(setRejectionData({
             ...rejectionData,
             attachment: null,
         }));
     };
 
     const handleReasonChange = (text) => {
-        dispatch(deliveryActions.setRejectionData({
+        dispatch(setRejectionData({
             ...rejectionData,
             reason: text,
         }));
     };
 
     const handleSubmit = () => {
-        dispatch(deliveryActions.rejectDelivery(
+        dispatch(rejectDelivery(
             rejectionData.deliveryId,
             rejectionData.reason,
             rejectionData.attachment
         ));
-        dispatch(deliveryActions.clearRejectionData());
+        dispatch(clearRejectionData());
         onClose();
     };
 
