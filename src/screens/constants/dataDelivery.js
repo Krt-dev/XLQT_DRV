@@ -6,31 +6,31 @@ export const DELIVERY_ITEMS = [
         store: 'Walmart',
         nextRoute: [
             {
-                place: 'San Francisco, CA - Market Street',
+                place: 'Market Street',
                 expectedTimeArrival: 'Feb 12, 2024, 2:45 PM',
                 expectedTimeDeparture: 'Feb 12, 2024, 3:00 PM',
                 serviceType: 'Pick up',
             },
             {
-                place: 'San Francisco, CA - 1st Street',
+                place: '1st Street',
                 expectedTimeArrival: 'Feb 12, 2024, 3:15 PM',
                 expectedTimeDeparture: 'Feb 12, 2024, 3:30 PM',
                 serviceType: 'Drop off',
             },
             {
-                place: 'San Francisco, CA - Mission Street',
+                place: 'Mission Street',
                 expectedTimeArrival: 'Feb 12, 2024, 3:45 PM',
                 expectedTimeDeparture: 'Feb 12, 2024, 4:00 PM',
                 serviceType: 'Drop off',
             },
             {
-                place: 'San Francisco, CA - Van Ness Avenue',
+                place: 'Van Ness Avenue',
                 expectedTimeArrival: 'Feb 12, 2024, 4:15 PM',
                 expectedTimeDeparture: 'Feb 12, 2024, 4:30 PM',
                 serviceType: 'Pick up',
             },
             {
-                place: 'San Francisco, CA - Lombard Street',
+                place: 'Lombard Street',
                 expectedTimeArrival: 'Feb 12, 2024, 4:45 PM',
                 expectedTimeDeparture: 'Feb 12, 2024, 5:00 PM',
                 serviceType: 'Drop off',

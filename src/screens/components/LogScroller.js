@@ -5,7 +5,7 @@ import { SAMPLE_LOGS } from '../constants/logData';
 import moment from 'moment';
 
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Import icon library
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const LogScroller = () => {
     const getStatusIcon = (status) => {

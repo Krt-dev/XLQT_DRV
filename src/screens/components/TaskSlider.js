@@ -61,7 +61,11 @@ const Card = ({ item, onStartTrip, onReject }) => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.button, styles.startButton]}
-                            onPress={() => onStartTrip(item)}
+                            onPress={() => {
+                                dispatch(startDelivery(item.id));
+                                dispatch(selectDelivery(null));
+                                onStartTrip(item);
+                            }}
                         >
                             <Text style={styles.buttonText}>Start Trip</Text>
                         </TouchableOpacity>
@@ -85,7 +89,6 @@ const TaskSlider = () => {
     const deliveryItems = useSelector(state => state.deliveries.items);
     const rejectionData = useSelector(state => state.deliveries.rejectionData);
 
-    // Add console.log to verify data
     console.log('TaskSlider deliveryItems:', deliveryItems);
 
     const handleReject = (item) => {
@@ -95,8 +98,9 @@ const TaskSlider = () => {
 
     const handleStartTrip = (item) => {
         console.log('Start Trip button pressed for:', item);
+        dispatch(selectDelivery(item.id));
         dispatch(startDelivery(item.id));
-        navigation.navigate('ProcessScreen', { itemId: item.id });
+        navigation.navigate('ProcessScreen');
     };
 
     const submitRejection = () => {

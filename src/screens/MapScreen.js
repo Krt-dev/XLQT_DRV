@@ -92,6 +92,7 @@ const MapScreen = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
