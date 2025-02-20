@@ -69,8 +69,8 @@ const MapStack = () => (
       component={ProcessScreen}
       options={{
         title: 'Process',
-        headerStyle: { backgroundColor: '#1882A1' },
-        headerTintColor: '#FFF',
+        // headerStyle: { backgroundColor: '#1882A1' },
+        headerTintColor: '#0CC2DC',
         headerTitleAlign: 'center',
       }}
     />

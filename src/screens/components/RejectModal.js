@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -62,7 +63,9 @@ const RejectModal = ({ visible, onClose }) => {
         >
             <View style={styles.modalOverlay}>
                 <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Cancel Trip</Text>
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={styles.modalTitle}>Cancel Trip</Text>
+                    </View>
                     <Text style={styles.storeTitle}>{deliveryItem?.store}</Text>
                     <View style={styles.infoRow}>
                         <Icon name="calendar" size={13} color="#A6A6A6" />
@@ -142,12 +145,13 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: 20,
         marginBottom: 10,
         fontFamily: 'LexendDeca-SemiBold',
+        color: '#FF6565',
     },
     storeTitle: {
-        fontSize: 12,
+        fontSize: 15,
         color: 'black',
         fontFamily: 'LexendDeca-SemiBold',
     },
@@ -180,6 +184,7 @@ const styles = StyleSheet.create({
         fontSize: 10,
         color: '#A6A6A6',
         textAlign: 'right',
+        fontFamily: 'Karla-Bold',
     },
     attachmentButton: {
         height: 90,

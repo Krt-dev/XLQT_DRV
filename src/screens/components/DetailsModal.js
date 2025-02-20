@@ -1,5 +1,6 @@
 import React from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const DetailsModal = ({ visible, item, onClose }) => {
     if (!item) { return null; }
@@ -7,25 +8,75 @@ const DetailsModal = ({ visible, item, onClose }) => {
     return (
         <Modal
             visible={visible}
-            animationType="slide"
+            animationType="fade"
             transparent={true}
             onRequestClose={onClose}
         >
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>{item.store}</Text>
-                    <Text style={styles.modalText}>Date: {item.date}</Text>
-                    <Text style={styles.modalText}>Location: {item.location}</Text>
-                    <Text style={styles.modalText}>Time: {item.time}</Text>
-                    <Text style={styles.modalText}>Routes: {item.routes}</Text>
-                    <Text style={styles.modalText}>Body Number: {item.bodyNumber}</Text>
-                    <Text style={styles.modalText}>Driver: {item.driver}</Text>
-                    <Text style={styles.modalText}>Plate Number: {item.plateNumber}</Text>
 
-
-                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                        <Text style={styles.buttonText}>Close</Text>
+                    <TouchableOpacity style={styles.closeButton} onPress={onClose} >
+                        <MaterialCommunityIcons name="close" size={22} color="#666" />
                     </TouchableOpacity>
+
+                    <ScrollView contentContainerStyle={styles.scrollContainer}>
+                        <Text style={styles.modalTitle}>{item.store}</Text>
+
+                        <View style={styles.infoBlock}>
+                            <View style={styles.infoRow}>
+                                <MaterialCommunityIcons name="calendar" size={16} color="#666" />
+                                <Text style={styles.modalText}>{item.date}</Text>
+                            </View>
+                            <View style={styles.infoRow}>
+                                <MaterialCommunityIcons name="map-marker" size={16} color="#666" />
+                                <Text style={styles.modalText}>{item.location}</Text>
+                            </View>
+                            <View style={styles.infoRow}>
+                                <MaterialCommunityIcons name="clock-outline" size={16} color="#666" />
+                                <Text style={styles.modalText}>{item.time}</Text>
+                            </View>
+                            <View style={styles.infoRow}>
+                                <MaterialCommunityIcons name="routes" size={16} color="#666" />
+                                <Text style={styles.modalText}>{item.routes} Routes</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.separator} />
+
+                        <View style={styles.infoBlock}>
+                            <View style={styles.infoRow}>
+                                <MaterialCommunityIcons name="truck-outline" size={16} color="#666" />
+                                <Text style={styles.modalText}>Body Number: {item.bodyNumber}</Text>
+                            </View>
+                            <View style={styles.infoRow}>
+                                <MaterialCommunityIcons name="account-tie" size={16} color="#666" />
+                                <Text style={styles.modalText}>Driver: {item.driver}</Text>
+                            </View>
+                            <View style={styles.infoRow}>
+                                <MaterialCommunityIcons name="car" size={16} color="#666" />
+                                <Text style={styles.modalText}>Plate Number: {item.plateNumber}</Text>
+                            </View>
+                            <View style={styles.routesSeparator}>
+                                <View style={styles.separator} />
+                                <Text style={styles.routesText}>Routes</Text>
+                                <View style={styles.separator} />
+                            </View>
+                            {item.nextRoute.map((route, index) => (
+                                <View key={index} style={styles.routeItem}>
+                                    <View style={styles.iconWithNumber}>
+                                        <MaterialCommunityIcons name="circle" size={24} color="#72D6E4" />
+                                        <Text style={styles.numberOverlay}>{index + 1}</Text>
+                                    </View>
+                                    <View style={styles.routeDetails}>
+                                        <Text style={styles.routeType}>{route.serviceType}</Text>
+                                        <Text style={styles.routePlace}>{route.place}</Text>
+                                        <Text style={styles.routeTime}>Expected Arrival time: {route.expectedTimeArrival}</Text>
+                                        <Text style={styles.routeTime}>Expected Departure time: {route.expectedTimeDeparture}</Text>
+                                    </View>
+                                </View>
+                            ))}
+                        </View>
+                    </ScrollView>
                 </View>
             </View>
         </Modal>
@@ -37,33 +88,107 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
-        width: 300,
+        width: 350,
         backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        alignItems: 'center',
+        padding: 0,
+        overflow: 'hidden',
+        borderRadius: 5,
+        maxHeight: '80%',
+        position: 'relative',
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        padding: 5,
+        zIndex: 1,
+    },
+    scrollContainer: {
+        alignItems: 'flex-start',
+        width: '100%',
+        paddingTop: 40,
+        paddingHorizontal: 20,
     },
     modalTitle: {
         fontSize: 20,
-        fontWeight: 'bold',
         marginBottom: 10,
+        fontFamily: 'LexendDeca-SemiBold',
+        textAlign: 'left',
     },
     modalText: {
-        fontSize: 16,
+        fontSize: 12,
+        fontFamily: 'Karla-Light',
+        textAlign: 'left',
+        marginLeft: 5,
+    },
+    infoBlock: {
+        width: '100%',
+        marginBottom: 10,
+    },
+    infoRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
         marginBottom: 5,
     },
-    closeButton: {
-        marginTop: 15,
-        backgroundColor: '#1882A1',
-        padding: 10,
-        borderRadius: 5,
+    separator: {
+        width: '100%',
+        height: 1,
+        backgroundColor: '#ccc',
+        marginVertical: 10,
     },
-    buttonText: {
-        color: 'white',
+    routesSeparator: {
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 10,
+        flexDirection: 'row',
+    },
+    routesText: {
+        fontSize: 14,
         fontWeight: 'bold',
+        color: '#666',
+        marginHorizontal: 5,
+    },
+    routeItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    iconWithNumber: {
+        position: 'relative',
+        marginRight: 10,
+        marginBottom: 30,
+    },
+    numberOverlay: {
+        position: 'absolute',
+        top: 2,
+        left: 8,
+        fontSize: 15,
+        fontWeight: 'bold',
+        color: 'white',
+    },
+    routeDetails: {
+        flex: 1,
+        marginBottom: 3,
+    },
+    routeType: {
+        fontSize: 11,
+        fontFamily: 'Karla-SemiBold',
+        color: '#A6A6A6',
+    },
+    routePlace: {
+        fontSize: 15,
+        fontFamily: 'Karla-Bold',
+    },
+    routeTime: {
+        fontSize: 10,
+        color: '#A6A6A6',
     },
 });
+
 
 export default DetailsModal;
