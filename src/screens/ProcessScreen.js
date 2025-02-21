@@ -1,5 +1,6 @@
+
 /* eslint-disable react-native/no-inline-styles */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -29,9 +30,13 @@ import {
     setCurrentStep,
     resetSlider,
     setIsRouteActive,
+    setIsSwipeButtonVisible, // Import the new action
+    setHasSwipedOnce, // Import the new action
 } from '../store/sliderSlice';
 import SwipeButton from 'rn-swipe-button';
 import { updateRailColor } from '../store/sliderSlice';
+import { showMessage } from 'react-native-flash-message'; // Import flash message
+
 
 const ProcessScreen = () => {
     const dispatch = useDispatch();
@@ -41,8 +46,8 @@ const ProcessScreen = () => {
     const expandedSections = useSelector(selectExpandedSections);
     const completedSteps = useSelector(selectCompletedSteps);
     const actionStatus = useSelector(selectActionStatus);
-    const { currentStep, currentRouteIndex, steps, railColor, isRouteActive } = useSelector(selectSliderState);
-    const [isSwipeButtonVisible, setIsSwipeButtonVisible] = useState(false);
+    const { currentStep, currentRouteIndex, steps, railColor, isRouteActive, isSwipeButtonVisible, hasSwipedOnce } = useSelector(selectSliderState); // Get all state from sliderSlice
+
 
     useEffect(() => {
         return () => {
@@ -52,14 +57,20 @@ const ProcessScreen = () => {
     }, [dispatch]);
 
     const handleToggleSection = (index) => {
-        if (isRouteActive) {
-            // Show an alert if a route is already active
+        if (isRouteActive && hasSwipedOnce) { // Check isRouteActive AND hasSwipedOnce
             Alert.alert(
                 'Route In Progress',
                 'Please complete the current route before starting a new one.',
                 [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
             );
-            return; // Prevent expanding the new section
+            return;
+        }
+
+        // Collapse the swipe button when the dropdown is collapsed
+        if (expandedSections[index]) {
+            dispatch(setIsSwipeButtonVisible(false));
+        } else {
+            dispatch(setIsSwipeButtonVisible(true));
         }
 
         dispatch(toggleSection(index));
@@ -73,15 +84,15 @@ const ProcessScreen = () => {
         let color;
         if (serviceType === 'Pick up') {
             color = '#1ABDD4';
-        } else if (serviceType === 'SDrop off') {
+        } else if (serviceType === 'Drop off') {
             color = '#FEB267';
         } else {
             color = '#D3D3D3';
         }
         dispatch(updateRailColor(color));
 
-        // Set isRouteActive to true when a new route is started
         dispatch(setIsRouteActive(true));
+        dispatch(setHasSwipedOnce(false)); // Reset hasSwipedOnce when a new route is started
 
         Animated.timing(animatedHeights[index], {
             toValue: expandedSections[index] ? 0 : 1,
@@ -89,7 +100,7 @@ const ProcessScreen = () => {
             useNativeDriver: false,
         }).start();
 
-        setIsSwipeButtonVisible(true);
+        dispatch(setIsSwipeButtonVisible(true));
     };
 
     const handleCompleteStep = (routeIndex, stepIndex) => {
@@ -140,21 +151,40 @@ const ProcessScreen = () => {
                             status: 'completed',
                         })
                     );
-                    setIsSwipeButtonVisible(false);
-                    dispatch(setIsRouteActive(false)); // Set isRouteActive to false when all steps are completed
+                    dispatch(setIsSwipeButtonVisible(false));
+                    dispatch(setIsRouteActive(false));
+                    dispatch(setHasSwipedOnce(false)); // Reset on completion
                 }
+
+                // Show flash message
+                showMessage({
+                    message: 'Step Completed!',
+                    description: `You have completed ${steps[currentStepIndex]}`,
+                    type: 'success',
+                    duration: 3000,
+                    floating: true,
+                });
+
+                dispatch(setHasSwipedOnce(true)); // Set to true after the first swipe
+
             } else {
                 console.log('All steps completed!');
-                setIsSwipeButtonVisible(false);
+                dispatch(setIsSwipeButtonVisible(false));
                 dispatch(
                     updateActionStatus({
                         routeIndex: currentRouteIndex,
                         status: 'completed',
                     })
                 );
+                dispatch(setIsRouteActive(false));
+                dispatch(setHasSwipedOnce(false)); // Reset on completion
             }
         }
         return true;
+    };
+
+    const isStepCompleted = (routeIndex, stepIndex) => {
+        return completedSteps[routeIndex]?.[stepIndex] === true;
     };
 
     if (!deliveryItem) {
@@ -204,7 +234,7 @@ const ProcessScreen = () => {
                             <TouchableOpacity
                                 onPress={() => handleToggleSection(index)}
                                 style={styles.routeCard}
-                                disabled={isRouteActive}
+                                disabled={isRouteActive && hasSwipedOnce} // Only disable after first swipe
                             >
                                 <View style={styles.routeHeader}>
                                     <View style={styles.numberCircle}>
@@ -223,7 +253,6 @@ const ProcessScreen = () => {
                                                 <Text style={styles.timeLabel}>Arrival:</Text>
                                                 <Text style={styles.timeText}>{route.expectedTimeArrival}</Text>
                                             </View>
-
                                             <View style={styles.timeRow}>
                                                 <MaterialCommunityIcons name="clock-outline" size={12} color="#666" />
                                                 <Text style={styles.timeLabel}>Departure:</Text>
@@ -250,7 +279,6 @@ const ProcessScreen = () => {
                                     </View>
                                 </View>
                             </TouchableOpacity>
-                            {/* {expandedSections[index] && ( */}
                             <Animated.View
                                 style={[
                                     styles.routeDetails,
@@ -272,11 +300,11 @@ const ProcessScreen = () => {
                                         disabled={stepIndex > 0 && !completedSteps[index]?.[stepIndex - 1]}
                                     >
                                         <MaterialCommunityIcons
-                                            name={completedSteps[index]?.[stepIndex]
+                                            name={isStepCompleted(index, stepIndex)
                                                 ? 'checkbox-marked-circle'
                                                 : 'checkbox-blank-circle'}
                                             size={12}
-                                            color={completedSteps[index]?.[stepIndex]
+                                            color={isStepCompleted(index, stepIndex)
                                                 ? '#67FE87'
                                                 : '#FEB267'}
                                         />
@@ -470,11 +498,6 @@ const styles = StyleSheet.create({
     spacer: {
         width: 20,
     },
-    sliderContainer: {
-        padding: 16,
-        alignItems: 'center',
-        backgroundColor: '#f5f5f5',
-    },
     currentStepText: {
         fontSize: 16,
         fontFamily: 'Karla-Bold',
@@ -498,7 +521,7 @@ const styles = StyleSheet.create({
     swipeButtonContainer: {
         alignItems: 'center',
         padding: 16,
-        backgroundColor: 'white',
+        backgroundColor: '#ffff',
     },
 });
 

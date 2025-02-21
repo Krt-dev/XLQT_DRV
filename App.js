@@ -15,6 +15,7 @@ import ChartIconActive from './src/assets/icons/chart-mixed.svg';
 import ChartIconInactive from './src/assets/icons/chart-mixed_Inactive.svg';
 import MapIconActive from './src/assets/icons/new_map_active.svg';
 import MapIconInactive from './src/assets/icons/new_map_inactive.svg';
+import FlashMessage from 'react-native-flash-message';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -102,6 +103,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <Navigation />
+      <FlashMessage position="top" />
     </Provider>
   );
 }

@@ -4,8 +4,10 @@ const initialState = {
     currentStep: null,
     currentRouteIndex: null,
     steps: [],
-    railColor: '#D3D3D3', // Default color
-    isRouteActive: false, // Add isRouteActive state
+    railColor: '#D3D3D3',
+    isRouteActive: false,
+    isSwipeButtonVisible: false, // Add isSwipeButtonVisible
+    hasSwipedOnce: false, // Add hasSwipedOnce
 };
 
 const sliderSlice = createSlice({
@@ -27,10 +29,16 @@ const sliderSlice = createSlice({
             };
         },
         updateRailColor: (state, action) => {
-            state.railColor = action.payload; // Update railColor in store
+            state.railColor = action.payload;
         },
         setIsRouteActive: (state, action) => {
-            state.isRouteActive = action.payload; // Update isRouteActive state
+            state.isRouteActive = action.payload;
+        },
+        setIsSwipeButtonVisible: (state, action) => {
+            state.isSwipeButtonVisible = action.payload; // Add reducer for isSwipeButtonVisible
+        },
+        setHasSwipedOnce: (state, action) => {
+            state.hasSwipedOnce = action.payload; // Add reducer for hasSwipedOnce
         },
     },
 });
@@ -41,7 +49,9 @@ export const {
     setSteps,
     resetSlider,
     updateRailColor,
-    setIsRouteActive, // Export the new action
+    setIsRouteActive,
+    setIsSwipeButtonVisible, // Export the new action
+    setHasSwipedOnce, // Export the new action
 } = sliderSlice.actions;
 
 export const selectSliderState = (state) => state.slider;
