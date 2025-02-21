@@ -1,24 +1,63 @@
-
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
+import React, { useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Animated } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import {
+    selectCurrentDelivery,
+    selectExpandedSections,
+    selectCompletedSteps,
+    selectActionStatus,
+    toggleSection,
+    completeActionStep,
+    updateActionStatus,
+    resetProcessState,
+} from '../store/deliverySlice';
 
 const ProcessScreen = () => {
+    const dispatch = useDispatch();
     const navigation = useNavigation();
-    const selectedDeliveryId = useSelector(state => state.deliveries.selectedDeliveryId);
-    const deliveryItem = useSelector(state =>
-        state.deliveries.items.find(item => item.id === selectedDeliveryId)
-    );
 
-    const [expandedSections, setExpandedSections] = useState({});
+    const deliveryItem = useSelector(selectCurrentDelivery);
+    const expandedSections = useSelector(selectExpandedSections);
+    const completedSteps = useSelector(selectCompletedSteps);
+    const actionStatus = useSelector(selectActionStatus);
 
-    const toggleSection = (index) => {
-        setExpandedSections((prev) => ({
-            ...prev,
-            [index]: !prev[index],
-        }));
+    useEffect(() => {
+        return () => {
+            dispatch(resetProcessState());
+        };
+    }, [dispatch]);
+
+    const handleToggleSection = (index) => {
+        dispatch(toggleSection(index));
+
+        Animated.timing(animatedHeights[index], {
+            toValue: expandedSections[index] ? 0 : 1,
+            duration: 450,
+            useNativeDriver: false,
+        }).start();
+    };
+
+    const animatedHeights = useRef(
+        deliveryItem?.nextRoute?.map(() => new Animated.Value(0)) || []
+    ).current;
+
+    const handleCompleteStep = (routeIndex, stepIndex) => {
+        dispatch(completeActionStep({ routeIndex, stepIndex }));
+
+        const routeSteps = getActionSteps(deliveryItem.nextRoute[routeIndex].serviceType);
+        const allStepsCompleted = routeSteps.every((_, idx) =>
+            completedSteps[routeIndex]?.[idx]
+        );
+
+        if (allStepsCompleted) {
+            dispatch(updateActionStatus({
+                routeIndex,
+                status: 'completed',
+            }));
+        }
     };
 
     const getActionSteps = (serviceType) => {
@@ -70,7 +109,7 @@ const ProcessScreen = () => {
                 {deliveryItem.nextRoute?.map((route, index) => (
                     <View key={index} style={styles.routeContainer}>
                         <TouchableOpacity
-                            onPress={() => toggleSection(index)}
+                            onPress={() => handleToggleSection(index)}
                             style={styles.routeCard}
                         >
                             <View style={styles.routeHeader}>
@@ -115,27 +154,51 @@ const ProcessScreen = () => {
                                 ) : null}
                             </View>
                         </TouchableOpacity>
-                        {expandedSections[index] && (
-                            <View style={styles.routeDetails}>
-                                {getActionSteps(route.serviceType).map((step, stepIndex) => (
-                                    <View key={stepIndex} style={styles.actionRow}>
-                                        <MaterialCommunityIcons
-                                            name="checkbox-blank-circle"
-                                            size={12}
-                                            color={stepIndex === 1 ? '#FEB267' : '#67FE87'}
-                                        />
-                                        <Text style={styles.actionText}>{step}</Text>
-                                    </View>
-                                ))}
-                            </View>
-                        )}
+                        {/* {expandedSections[index] && ( */}
+                        <Animated.View
+                            style={[
+                                styles.routeDetails,
+                                {
+                                    opacity: animatedHeights[index],
+                                    maxHeight: animatedHeights[index].interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: [0, 600],
+                                    }),
+                                    overflow: 'hidden',
+                                },
+                            ]}
+                        >
+                            {getActionSteps(route.serviceType).map((step, stepIndex) => (
+                                <TouchableOpacity
+                                    key={stepIndex}
+                                    style={styles.actionRow}
+                                    onPress={() => handleCompleteStep(index, stepIndex)}
+                                    disabled={stepIndex > 0 && !completedSteps[index]?.[stepIndex - 1]}
+                                >
+                                    <MaterialCommunityIcons
+                                        name={completedSteps[index]?.[stepIndex]
+                                            ? 'checkbox-marked-circle'
+                                            : 'checkbox-blank-circle'}
+                                        size={12}
+                                        color={completedSteps[index]?.[stepIndex]
+                                            ? '#67FE87'
+                                            : '#FEB267'}
+                                    />
+                                    <Text style={styles.actionText}>{step}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </Animated.View>
                     </View>
                 ))}
+                <View style={styles.routesSeparator}>
+                    <View style={styles.separator} />
+                    <Text style={styles.sectionTitle}>End of Trip</Text>
+                    <View style={styles.separator} />
+                </View>
             </View>
         </ScrollView>
     );
 };
-
 const styles = StyleSheet.create({
     scrollView: {
         backgroundColor: '#ffffff',
@@ -259,6 +322,8 @@ const styles = StyleSheet.create({
         padding: 16,
         paddingTop: 0,
         backgroundColor: '#ffffff',
+        borderBottomLeftRadius: 8,
+        borderBottomRightRadius: 8,
     },
     actionRow: {
         flexDirection: 'row',

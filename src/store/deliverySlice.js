@@ -9,6 +9,12 @@ const initialState = {
         reason: '',
         attachment: null,
     },
+    process: {
+        expandedSections: {},
+        completedSteps: {},
+        currentRoute: null,
+        actionStatus: {}, // Tracks status of each action (pending, completed, etc.)
+    },
 };
 
 const deliverySlice = createSlice({
@@ -55,6 +61,28 @@ const deliverySlice = createSlice({
         setActiveTrip: (state, action) => {
             state.activeTripId = action.payload;
         },
+        toggleSection: (state, action) => {
+            const sectionIndex = action.payload;
+            state.process.expandedSections[sectionIndex] =
+                !state.process.expandedSections[sectionIndex];
+        },
+        setCurrentRoute: (state, action) => {
+            state.process.currentRoute = action.payload;
+        },
+        completeActionStep: (state, action) => {
+            const { routeIndex, stepIndex } = action.payload;
+            if (!state.process.completedSteps[routeIndex]) {
+                state.process.completedSteps[routeIndex] = {};
+            }
+            state.process.completedSteps[routeIndex][stepIndex] = true;
+        },
+        updateActionStatus: (state, action) => {
+            const { routeIndex, status } = action.payload;
+            state.process.actionStatus[routeIndex] = status;
+        },
+        resetProcessState: (state) => {
+            state.process = initialState.process;
+        },
     },
 });
 
@@ -66,6 +94,23 @@ export const {
     setRejectionData,
     clearRejectionData,
     setActiveTrip,
+    toggleSection,
+    setCurrentRoute,
+    completeActionStep,
+    updateActionStatus,
+    resetProcessState,
 } = deliverySlice.actions;
+
+export const selectCurrentDelivery = (state) =>
+    state.deliveries.items.find(item => item.id === state.deliveries.selectedDeliveryId);
+
+export const selectExpandedSections = (state) =>
+    state.deliveries.process.expandedSections;
+
+export const selectCompletedSteps = (state) =>
+    state.deliveries.process.completedSteps;
+
+export const selectActionStatus = (state) =>
+    state.deliveries.process.actionStatus;
 
 export default deliverySlice.reducer;
