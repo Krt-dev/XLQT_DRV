@@ -50,8 +50,8 @@ export const {
     resetSlider,
     updateRailColor,
     setIsRouteActive,
-    setIsSwipeButtonVisible, // Export the new action
-    setHasSwipedOnce, // Export the new action
+    setIsSwipeButtonVisible,
+    setHasSwipedOnce,
 } = sliderSlice.actions;
 
 export const selectSliderState = (state) => state.slider;
