@@ -13,8 +13,11 @@ const initialState = {
         expandedSections: {},
         completedSteps: {},
         currentRoute: null,
-        actionStatus: {}, // Tracks status of each action (pending, completed, etc.)
+        actionStatus: {},
     },
+    isDeliveryStarting: false,
+    modalContext: null,
+
 };
 
 const deliverySlice = createSlice({
@@ -83,6 +86,15 @@ const deliverySlice = createSlice({
         resetProcessState: (state) => {
             state.process = initialState.process;
         },
+        setIsDeliveryStarting: (state, action) => {
+            state.isDeliveryStarting = action.payload;
+        },
+        setModalContext: (state, action) => {
+            state.modalContext = action.payload;
+        },
+        clearModalContext: (state) => {
+            state.modalContext = null;
+        },
     },
 });
 
@@ -99,6 +111,9 @@ export const {
     completeActionStep,
     updateActionStatus,
     resetProcessState,
+    setIsDeliveryStarting,
+    setModalContext,
+    clearModalContext,
 } = deliverySlice.actions;
 
 export const selectCurrentDelivery = (state) =>

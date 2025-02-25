@@ -6,8 +6,8 @@ const initialState = {
     steps: [],
     railColor: '#D3D3D3',
     isRouteActive: false,
-    isSwipeButtonVisible: false, // Add isSwipeButtonVisible
-    hasSwipedOnce: false, // Add hasSwipedOnce
+    isSwipeButtonVisible: false,
+    hasSwipedOnce: false,
 };
 
 const sliderSlice = createSlice({
@@ -35,10 +35,10 @@ const sliderSlice = createSlice({
             state.isRouteActive = action.payload;
         },
         setIsSwipeButtonVisible: (state, action) => {
-            state.isSwipeButtonVisible = action.payload; // Add reducer for isSwipeButtonVisible
+            state.isSwipeButtonVisible = action.payload;
         },
         setHasSwipedOnce: (state, action) => {
-            state.hasSwipedOnce = action.payload; // Add reducer for hasSwipedOnce
+            state.hasSwipedOnce = action.payload;
         },
     },
 });

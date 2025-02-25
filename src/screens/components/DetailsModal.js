@@ -1,21 +1,39 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
+import { selectDelivery, clearModalContext } from './../../store/deliverySlice';
 
-const DetailsModal = ({ visible, item, onClose }) => {
+const DetailsModal = ({ item }) => { // Remove visible and onClose props
+    const dispatch = useDispatch();
+    const selectedDeliveryId = useSelector(state => state.deliveries.selectedDeliveryId); // Get selectedDeliveryId from Redux
+    const modalContext = useSelector(state => state.deliveries.modalContext); // Get modalContext from Redux
+
     if (!item) { return null; }
+
+    // Conditionally render the modal based on selectedDeliveryId and modalContext
+    const isVisible = selectedDeliveryId === item.id && modalContext === 'card';
 
     return (
         <Modal
-            visible={visible}
+            visible={isVisible}
             animationType="fade"
             transparent={true}
-            onRequestClose={onClose}
+            onRequestClose={() => {
+                dispatch(selectDelivery(null));
+                dispatch(clearModalContext());
+            }}
         >
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
 
-                    <TouchableOpacity style={styles.closeButton} onPress={onClose} >
+                    <TouchableOpacity
+                        style={styles.closeButton}
+                        onPress={() => {
+                            dispatch(selectDelivery(null));
+                            dispatch(clearModalContext());
+                        }}
+                    >
                         <MaterialCommunityIcons name="close" size={22} color="#666" />
                     </TouchableOpacity>
 
@@ -82,6 +100,7 @@ const DetailsModal = ({ visible, item, onClose }) => {
         </Modal>
     );
 };
+
 
 const styles = StyleSheet.create({
     modalContainer: {

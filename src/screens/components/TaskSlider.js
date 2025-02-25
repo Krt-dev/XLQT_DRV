@@ -17,6 +17,9 @@ import {
     startDelivery,
     clearRejectionData,
     selectDelivery,
+    setIsDeliveryStarting,
+    setModalContext,
+    clearModalContext,
 } from './../../store/deliverySlice';
 import { useSelector, useDispatch } from 'react-redux';
 import DetailsModal from './DetailsModal';
@@ -27,12 +30,15 @@ const CARD_WIDTH = width * 0.8;
 const Card = ({ item, onStartTrip, onReject }) => {
     const dispatch = useDispatch();
     const selectedDeliveryId = useSelector(state => state.deliveries.selectedDeliveryId);
+    const modalContext = useSelector(state => state.deliveries.modalContext);
 
     return (
         <>
             <TouchableOpacity
-                onPress={() => dispatch(selectDelivery(item.id))}
-                activeOpacity={0.8}
+                onPress={() => {
+                    dispatch(selectDelivery(item.id));
+                    dispatch(setModalContext('card'));
+                }} activeOpacity={0.8}
             >
                 <View style={styles.card}>
                     <View style={styles.cardHeader}>
@@ -61,10 +67,13 @@ const Card = ({ item, onStartTrip, onReject }) => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.button, styles.startButton]}
-                            onPress={() => {
+                            onPress={(event) => {
+                                event.stopPropagation();
                                 dispatch(startDelivery(item.id));
+                                dispatch(setIsDeliveryStarting(true));
                                 dispatch(selectDelivery(null));
                                 onStartTrip(item);
+                                dispatch(clearModalContext());
                             }}
                         >
                             <Text style={styles.buttonText}>Start Trip</Text>
@@ -74,8 +83,7 @@ const Card = ({ item, onStartTrip, onReject }) => {
             </TouchableOpacity>
 
             <DetailsModal
-                visible={selectedDeliveryId === item.id}
-                item={item}
+                visible={selectedDeliveryId === item.id && modalContext === 'card'} item={item}
                 onClose={() => dispatch(selectDelivery(null))}
             />
         </>
@@ -98,8 +106,8 @@ const TaskSlider = () => {
 
     const handleStartTrip = (item) => {
         console.log('Start Trip button pressed for:', item);
+        dispatch(setIsDeliveryStarting(false));
         dispatch(selectDelivery(item.id));
-        dispatch(startDelivery(item.id));
         navigation.navigate('ProcessScreen');
     };
 

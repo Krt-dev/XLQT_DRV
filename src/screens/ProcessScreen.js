@@ -22,6 +22,7 @@ import {
     completeActionStep,
     updateActionStatus,
     resetProcessState,
+    setIsDeliveryStarting,
 } from '../store/deliverySlice';
 import {
     selectSliderState,
@@ -46,7 +47,15 @@ const ProcessScreen = () => {
     const expandedSections = useSelector(selectExpandedSections);
     const completedSteps = useSelector(selectCompletedSteps);
     const actionStatus = useSelector(selectActionStatus);
+    const isDeliveryStarting = useSelector((state) => state.deliveries.isDeliveryStarting); //NEW
     const { currentStep, currentRouteIndex, steps, railColor, isRouteActive, isSwipeButtonVisible, hasSwipedOnce } = useSelector(selectSliderState); // Get all state from sliderSlice
+
+
+    useEffect(() => {
+        if (!deliveryItem && !isDeliveryStarting) {
+            navigation.goBack();
+        }
+    }, [deliveryItem, isDeliveryStarting, navigation]);
 
 
     useEffect(() => {
@@ -153,7 +162,7 @@ const ProcessScreen = () => {
                     );
                     dispatch(setIsSwipeButtonVisible(false));
                     dispatch(setIsRouteActive(false));
-                    dispatch(setHasSwipedOnce(false)); // Reset on completion
+                    dispatch(setHasSwipedOnce(false));
                 }
 
                 // Show flash message
