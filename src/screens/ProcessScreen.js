@@ -7,6 +7,7 @@ import {
     StyleSheet,
     Animated,
     Alert,
+    ActivityIndicator,
 } from 'react-native';
 // import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useSelector, useDispatch } from 'react-redux';
@@ -39,6 +40,7 @@ import SwipeButtonSection from './components/SwipeButtonSection';
 import { getActionSteps } from '../utils/deliveryUtils';
 import SectionSeparator from './components/SectionSeparator';
 import DeliveryInfo from './components/DeliveryInfo';
+import { setLoading, selectIsLoading } from '../store/loadingSlice'; // Import loading actions and selector
 
 const ProcessScreen = () => {
     const dispatch = useDispatch();
@@ -48,8 +50,42 @@ const ProcessScreen = () => {
     const expandedSections = useSelector(selectExpandedSections);
     const completedSteps = useSelector(selectCompletedSteps);
     // const actionStatus = useSelector(selectActionStatus);
-    const isDeliveryStarting = useSelector((state) => state.deliveries.isDeliveryStarting);
-    const { currentStep, currentRouteIndex, steps, railColor, isRouteActive, isSwipeButtonVisible, hasSwipedOnce } = useSelector(selectSliderState);
+    const isDeliveryStarting = useSelector(
+        state => state.deliveries.isDeliveryStarting,
+    );
+    const {
+        currentStep,
+        currentRouteIndex,
+        steps,
+        railColor,
+        isRouteActive,
+        isSwipeButtonVisible,
+        hasSwipedOnce,
+    } = useSelector(selectSliderState);
+
+    const isLoading = useSelector(selectIsLoading);
+
+    useEffect(() => {
+        let loadingTimeout;
+
+        const startLoading = () => {
+            dispatch(setLoading(true));
+            loadingTimeout = setTimeout(() => {
+                dispatch(setLoading(false));
+            }, 2000);
+        };
+
+        if (!deliveryItem) {
+            navigation.goBack();
+        } else {
+            startLoading();
+        }
+
+        return () => {
+            clearTimeout(loadingTimeout);
+            dispatch(setLoading(false));
+        };
+    }, [deliveryItem, navigation, dispatch]);
 
     useEffect(() => {
         if (!deliveryItem && !isDeliveryStarting) {
@@ -65,15 +101,20 @@ const ProcessScreen = () => {
     }, [dispatch]);
 
     const animatedHeights = useRef(
-        deliveryItem?.nextRoute?.map(() => new Animated.Value(0)) || []
+        deliveryItem?.nextRoute?.map(() => new Animated.Value(0)) || [],
     ).current;
 
-    const handleToggleSection = (index) => {
+    const handleToggleSection = index => {
         if (isRouteActive && hasSwipedOnce) {
             Alert.alert(
                 'Route In Progress',
                 'Please complete the current route before starting a new one.',
-                [{ text: 'OK', onPress: () => console.log('OK Pressed') }]
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => console.log('OK Pressed'),
+                    },
+                ],
             );
             return;
         }
@@ -119,18 +160,27 @@ const ProcessScreen = () => {
     };
 
     const handleCompleteStep = (routeIndex, stepIndex) => {
-        dispatch(completeActionStep({ routeIndex, stepIndex }));
+        dispatch(
+            completeActionStep({
+                routeIndex,
+                stepIndex,
+            }),
+        );
 
-        const routeSteps = getActionSteps(deliveryItem.nextRoute[routeIndex].serviceType);
-        const allStepsCompleted = routeSteps.every((_, idx) =>
-            completedSteps[routeIndex]?.[idx]
+        const routeSteps = getActionSteps(
+            deliveryItem.nextRoute[routeIndex].serviceType,
+        );
+        const allStepsCompleted = routeSteps.every(
+            (_, idx) => completedSteps[routeIndex]?.[idx],
         );
 
         if (allStepsCompleted) {
-            dispatch(updateActionStatus({
-                routeIndex,
-                status: 'completed',
-            }));
+            dispatch(
+                updateActionStatus({
+                    routeIndex,
+                    status: 'completed',
+                }),
+            );
         }
     };
 
@@ -146,9 +196,13 @@ const ProcessScreen = () => {
             const nextStepIndex = currentStepIndex + 1;
 
             console.log('onSwipeComplete called');
-            console.log({ currentStepIndex, nextStepIndex, steps, currentRouteIndex });
+            console.log({
+                currentStepIndex,
+                nextStepIndex,
+                steps,
+                currentRouteIndex,
+            });
             console.log('Current step:', currentStep);
-
             if (nextStepIndex < steps.length) {
                 console.log('Not the last step');
 
@@ -156,9 +210,11 @@ const ProcessScreen = () => {
                     completeActionStep({
                         routeIndex: currentRouteIndex,
                         stepIndex: currentStepIndex,
-                    })
+                    }),
                 );
-                console.log(`Dispatched completeActionStep for routeIndex: ${currentRouteIndex}, stepIndex: ${currentStepIndex}`);
+                console.log(
+                    `Dispatched completeActionStep for routeIndex: ${currentRouteIndex}, stepIndex: ${currentStepIndex}`,
+                );
 
                 dispatch(setCurrentStep(steps[nextStepIndex]));
                 console.log('Set next step to:', steps[nextStepIndex]);
@@ -171,9 +227,7 @@ const ProcessScreen = () => {
                     duration: 3000,
                     floating: true,
                 });
-
                 dispatch(setHasSwipedOnce(true));
-
             } else {
                 console.log('All tasks completed');
                 showMessage({
@@ -188,15 +242,17 @@ const ProcessScreen = () => {
                     completeActionStep({
                         routeIndex: currentRouteIndex,
                         stepIndex: currentStepIndex,
-                    })
+                    }),
                 );
-                console.log(`Dispatched completeActionStep for LAST STEP - routeIndex: ${currentRouteIndex}, stepIndex: ${currentStepIndex}`);
+                console.log(
+                    `Dispatched completeActionStep for LAST STEP - routeIndex: ${currentRouteIndex}, stepIndex: ${currentStepIndex}`,
+                );
 
                 dispatch(
                     updateActionStatus({
                         routeIndex: currentRouteIndex,
                         status: 'completed',
-                    })
+                    }),
                 );
                 console.log('Dispatched updateActionStatus');
                 dispatch(setIsSwipeButtonVisible(false));
@@ -215,57 +271,53 @@ const ProcessScreen = () => {
         return completedSteps[routeIndex]?.[stepIndex] === true;
     };
 
-    if (!deliveryItem) {
-        return (
-            <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>No delivery selected.</Text>
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => navigation.goBack()}
-                >
-                    <Text style={styles.backButtonText}>Go Back</Text>
-                </TouchableOpacity>
-            </View>
-        );
-    }
-
     return (
         <View style={styles.mainContainer}>
-            <ScrollView style={styles.scrollView}>
-                <View style={styles.container}>
-                    <Text style={styles.title}>{deliveryItem.store}</Text>
-
-                    <DeliveryInfo deliveryItem={deliveryItem} />
-
-                    <SectionSeparator title="Routes" />
-
-                    {deliveryItem.nextRoute?.map((route, index) => (
-                        <RouteItem
-                            key={index}
-                            route={route}
-                            index={index}
-                            expandedSections={expandedSections}
-                            animatedHeights={animatedHeights}
-                            handleToggleSection={handleToggleSection}
-                            handleCompleteStep={handleCompleteStep}
-                            isStepCompleted={isStepCompleted}
-                            isRouteActive={isRouteActive}
-                            hasSwipedOnce={hasSwipedOnce}
-                            completedSteps={completedSteps}
-                        />
-                    ))}
-
-                    <SectionSeparator title="End of Trip" />
+            {isLoading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#1ABDD4" />
+                    <Text style={styles.loadingText}>Loading</Text>
+                    <Text> </Text>
                 </View>
-            </ScrollView>
+            ) : (
+                <ScrollView style={styles.scrollView}>
+                    <View style={styles.container}>
+                        <Text style={styles.title}>{deliveryItem.store}</Text>
 
-            {isSwipeButtonVisible && currentRouteIndex !== null && steps.length > 0 && (
-                <SwipeButtonSection
-                    currentStep={currentStep}
-                    railColor={railColor}
-                    onSwipeComplete={onSwipeComplete}
-                />
+                        <DeliveryInfo deliveryItem={deliveryItem} />
+
+                        <SectionSeparator title="Routes" />
+
+                        {deliveryItem.nextRoute?.map((route, index) => (
+                            <RouteItem
+                                key={index}
+                                route={route}
+                                index={index}
+                                expandedSections={expandedSections}
+                                animatedHeights={animatedHeights}
+                                handleToggleSection={handleToggleSection}
+                                handleCompleteStep={handleCompleteStep}
+                                isStepCompleted={isStepCompleted}
+                                isRouteActive={isRouteActive}
+                                hasSwipedOnce={hasSwipedOnce}
+                                completedSteps={completedSteps}
+                            />
+                        ))}
+
+                        <SectionSeparator title="End of Trip" />
+                    </View>
+                    <Text> </Text>
+                </ScrollView>
             )}
+            {isSwipeButtonVisible &&
+                currentRouteIndex !== null &&
+                steps.length > 0 && (
+                    <SwipeButtonSection
+                        currentStep={currentStep}
+                        railColor={railColor}
+                        onSwipeComplete={onSwipeComplete}
+                    />
+                )}
         </View>
     );
 };
@@ -307,6 +359,16 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
         textAlign: 'center',
+    },
+    // Styles for the loading screen
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
     },
 });
 
