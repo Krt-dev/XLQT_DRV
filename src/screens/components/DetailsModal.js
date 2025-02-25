@@ -4,14 +4,13 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useSelector, useDispatch } from 'react-redux'; // Import useSelector and useDispatch
 import { selectDelivery, clearModalContext } from './../../store/deliverySlice';
 
-const DetailsModal = ({ item }) => { // Remove visible and onClose props
+const DetailsModal = ({ item }) => {
     const dispatch = useDispatch();
     const selectedDeliveryId = useSelector(state => state.deliveries.selectedDeliveryId); // Get selectedDeliveryId from Redux
     const modalContext = useSelector(state => state.deliveries.modalContext); // Get modalContext from Redux
 
     if (!item) { return null; }
 
-    // Conditionally render the modal based on selectedDeliveryId and modalContext
     const isVisible = selectedDeliveryId === item.id && modalContext === 'card';
 
     return (

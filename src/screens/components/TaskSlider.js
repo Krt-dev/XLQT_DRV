@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import RejectModal from './RejectModal';
+import DetailsModal from './DetailsModal';
 import { useNavigation } from '@react-navigation/native';
 import {
     setRejectionData,
@@ -22,15 +23,15 @@ import {
     clearModalContext,
 } from './../../store/deliverySlice';
 import { useSelector, useDispatch } from 'react-redux';
-import DetailsModal from './DetailsModal';
+
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.8;
 
 const Card = ({ item, onStartTrip, onReject }) => {
     const dispatch = useDispatch();
-    const selectedDeliveryId = useSelector(state => state.deliveries.selectedDeliveryId);
-    const modalContext = useSelector(state => state.deliveries.modalContext);
+    // const selectedDeliveryId = useSelector(state => state.deliveries.selectedDeliveryId);
+    // const modalContext = useSelector(state => state.deliveries.modalContext);
 
     return (
         <>
@@ -83,7 +84,8 @@ const Card = ({ item, onStartTrip, onReject }) => {
             </TouchableOpacity>
 
             <DetailsModal
-                visible={selectedDeliveryId === item.id && modalContext === 'card'} item={item}
+                // visible={selectedDeliveryId === item.id && modalContext === 'card'}
+                item={item}
                 onClose={() => dispatch(selectDelivery(null))}
             />
         </>

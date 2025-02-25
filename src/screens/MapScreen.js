@@ -55,7 +55,6 @@ const MapScreen = () => {
     dispatch(setSearchQuery(text));
   };
 
-  // Add console.log to verify data before render
   console.log('MapScreen deliveryItems:', deliveryItems);
 
   return (
