@@ -95,6 +95,13 @@ const deliverySlice = createSlice({
         clearModalContext: (state) => {
             state.modalContext = null;
         },
+        markDeliveryAsComplete: (state, action) => {
+            const deliveryId = action.payload;
+            const delivery = state.items.find(item => item.id === deliveryId);
+            if (delivery) {
+                delivery.status = 'Completed';
+            }
+        },
     },
 });
 
@@ -114,6 +121,7 @@ export const {
     setIsDeliveryStarting,
     setModalContext,
     clearModalContext,
+    markDeliveryAsComplete,
 } = deliverySlice.actions;
 
 export const selectCurrentDelivery = (state) =>

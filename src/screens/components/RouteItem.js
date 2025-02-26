@@ -25,8 +25,13 @@ const RouteItem = ({
         return routeSteps.every((_, stepIndex) => completedSteps[index][stepIndex] === true);
     };
 
-    const numberCircleBackgroundColor = isRouteCompleted() ? '#00C27B' : '#72D6E4';
+    const isSectionExpanded = expandedSections[index];
 
+    const numberCircleBackgroundColor = isRouteCompleted() ?
+        '#00C27B' :
+        isSectionExpanded ?
+            '#2980b9' :
+            '#72D6E4';
     return (
         <View key={index} style={styles.routeContainer}>
             <TouchableOpacity
@@ -101,6 +106,7 @@ const RouteItem = ({
                     completedSteps={completedSteps}
                 />
             </Animated.View>
+            <View style={styles.line} />
         </View>
     );
 };
@@ -181,6 +187,11 @@ const styles = StyleSheet.create({
     },
     chevron: {
         marginLeft: 4,
+    },
+    line: {
+        borderBottomColor: '#A6A6A6',
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        width: '100%',
     },
 });
 

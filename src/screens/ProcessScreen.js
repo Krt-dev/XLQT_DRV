@@ -37,6 +37,7 @@ import {
 import { showMessage } from 'react-native-flash-message';
 import RouteItem from './components/RouteItem';
 import SwipeButtonSection from './components/SwipeButtonSection';
+import TaskCompleteButton from './components/TaskCompleteButton';
 import { getActionSteps } from '../utils/deliveryUtils';
 import SectionSeparator from './components/SectionSeparator';
 import DeliveryInfo from './components/DeliveryInfo';
@@ -341,8 +342,9 @@ const ProcessScreen = () => {
                                 completedSteps={completedSteps}
                             />
                         ))}
-
-                        <SectionSeparator title="End of Trip" />
+                        <View style={styles.completeButton}>
+                            <TaskCompleteButton />
+                        </View>
                     </View>
                     <Text> </Text>
                 </ScrollView>
@@ -406,6 +408,9 @@ const styles = StyleSheet.create({
     loadingText: {
         marginTop: 10,
         fontSize: 16,
+    },
+    completeButton: {
+        paddingTop: 10,
     },
 });
 
