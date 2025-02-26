@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import {
     View,
     Text,
-    TouchableOpacity,
+    // TouchableOpacity,
     ScrollView,
     StyleSheet,
     Animated,
@@ -200,7 +200,7 @@ const ProcessScreen = () => {
 
     const isRouteFullyCompleted = () => {
         if (currentRouteIndex === null || !deliveryItem?.nextRoute) {
-            return false; // No route selected or no delivery item
+            return false;
         }
 
         const routeSteps = getActionSteps(
@@ -218,11 +218,13 @@ const ProcessScreen = () => {
     };
 
     const swipeButtonDisabled = allStepsForCurrentRouteCompleted();
+    const isSectionExpanded = currentRouteIndex !== null && expandedSections[currentRouteIndex];
     const showSwipeButton =
         isSwipeButtonVisible &&
         currentRouteIndex !== null &&
         steps.length > 0 &&
-        !isRouteFullyCompleted();
+        !isRouteFullyCompleted() &&
+        isSectionExpanded;
 
     const onSwipeComplete = () => {
         if (currentRouteIndex !== null) {
