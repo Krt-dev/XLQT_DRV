@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         color: '#666',
     },
     spacer: {
-        width: 40,
+        flex: 1,
     },
 });
 

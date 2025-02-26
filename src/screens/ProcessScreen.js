@@ -184,6 +184,46 @@ const ProcessScreen = () => {
         }
     };
 
+    const isStepCompleted = (routeIndex, stepIndex) => {
+        return completedSteps[routeIndex]?.[stepIndex] === true;
+    };
+
+    const allStepsForCurrentRouteCompleted = () => {
+        if (currentRouteIndex === null || !steps) {
+            return false;
+        }
+
+        return steps.every((_, stepIndex) =>
+            isStepCompleted(currentRouteIndex, stepIndex),
+        );
+    };
+
+    const isRouteFullyCompleted = () => {
+        if (currentRouteIndex === null || !deliveryItem?.nextRoute) {
+            return false; // No route selected or no delivery item
+        }
+
+        const routeSteps = getActionSteps(
+            deliveryItem.nextRoute[currentRouteIndex].serviceType,
+        );
+
+        const allStepsCompleted = routeSteps.every((_, stepIndex) =>
+            isStepCompleted(currentRouteIndex, stepIndex),
+        );
+
+        return (
+            routeSteps.length >= 4 && // ARRIVED, LOAD, LOADING, and DEPART
+            allStepsCompleted
+        );
+    };
+
+    const swipeButtonDisabled = allStepsForCurrentRouteCompleted();
+    const showSwipeButton =
+        isSwipeButtonVisible &&
+        currentRouteIndex !== null &&
+        steps.length > 0 &&
+        !isRouteFullyCompleted();
+
     const onSwipeComplete = () => {
         if (currentRouteIndex !== null) {
             const currentStepIndex = steps.findIndex(step => step === currentStep);
@@ -267,10 +307,6 @@ const ProcessScreen = () => {
         return true;
     };
 
-    const isStepCompleted = (routeIndex, stepIndex) => {
-        return completedSteps[routeIndex]?.[stepIndex] === true;
-    };
-
     return (
         <View style={styles.mainContainer}>
             {isLoading ? (
@@ -309,15 +345,14 @@ const ProcessScreen = () => {
                     <Text> </Text>
                 </ScrollView>
             )}
-            {isSwipeButtonVisible &&
-                currentRouteIndex !== null &&
-                steps.length > 0 && (
-                    <SwipeButtonSection
-                        currentStep={currentStep}
-                        railColor={railColor}
-                        onSwipeComplete={onSwipeComplete}
-                    />
-                )}
+            {showSwipeButton && (
+                <SwipeButtonSection
+                    currentStep={currentStep}
+                    railColor={railColor}
+                    onSwipeComplete={onSwipeComplete}
+                    disabled={swipeButtonDisabled}
+                />
+            )}
         </View>
     );
 };
