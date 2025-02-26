@@ -82,7 +82,7 @@ export const DELIVERY_ITEMS = [
     },
     {
         id: '3',
-        status: 'Completed',
+        status: 'New',
         location: 'Los Angeles, CA',
         store: 'Best Buy',
         nextRoute: [

@@ -9,6 +9,11 @@ const initialState = {
         reason: '',
         attachment: null,
     },
+    unprocessedTaskData: {
+        deliveryId: null,
+        reason: '',
+        attachment: null,
+    },
     process: {
         expandedSections: {},
         completedSteps: {},
@@ -38,14 +43,22 @@ const deliverySlice = createSlice({
         },
         rejectDelivery: (state, action) => {
             const { deliveryId, reason, attachment } = action.payload;
-            const delivery = state.items.find(item => item.id === deliveryId);
-            if (delivery) {
-                delivery.status = 'Cancelled';
-            }
-            state.rejectionData = {
-                deliveryId: null,
-                reason: '',
-                attachment: null,
+
+            const updatedItems = state.items.map(item => {
+                if (item.id === deliveryId) {
+                    return { ...item, status: 'Cancelled' };
+                }
+                return item;
+            });
+
+            return {
+                ...state,
+                items: updatedItems,
+                rejectionData: {
+                    deliveryId: null,
+                    reason: '',
+                    attachment: null,
+                },
             };
         },
         setRejectionData: (state, action) => {
@@ -102,6 +115,30 @@ const deliverySlice = createSlice({
                 delivery.status = 'Completed';
             }
         },
+        setUnprocessedTask: (state, action) => {
+            state.unprocessedTaskData = {
+                ...state.unprocessedTaskData,
+                ...action.payload,
+            };
+        },
+        submitUnprocessedTask: (state, action) => {
+            // In a real application, you'd likely make an API call here
+            // to submit the unprocessed task data to your server.
+
+            // For this example, we'll just clear the data.
+            state.unprocessedTaskData = {
+                deliveryId: null,
+                reason: '',
+                attachment: null,
+            };
+        },
+        clearUnprocessedTaskData: (state) => {
+            state.unprocessedTaskData = {
+                deliveryId: null,
+                reason: '',
+                attachment: null,
+            };
+        },
     },
 });
 
@@ -122,6 +159,9 @@ export const {
     setModalContext,
     clearModalContext,
     markDeliveryAsComplete,
+    setUnprocessedTask,
+    submitUnprocessedTask,
+    clearUnprocessedTaskData,
 } = deliverySlice.actions;
 
 export const selectCurrentDelivery = (state) =>

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, Text, StyleSheet, Modal, View, Alert } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import {
     selectCurrentDelivery,
     markDeliveryAsComplete,
     selectCompletedSteps,
+    setUnprocessedTask,
 } from '../../store/deliverySlice';
 import { getActionSteps } from '../../utils/deliveryUtils';
-import { store } from '../../store/store';
+import UnprocessedTaskModal from './UnprocessedTaskModal';
 
 const TaskCompleteButton = () => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -80,7 +81,6 @@ const TaskCompleteButton = () => {
                                 if (deliveryItem && deliveryItem.id) {
                                     dispatch(markDeliveryAsComplete(deliveryItem.id));
                                     console.log('Delivery completed with ID:', deliveryItem.id);
-                                    console.log('Updated store state:', store.getState().deliveries);
                                     Alert.alert('Success', 'Delivery marked as complete!');
                                 }
                             } catch (error) {
@@ -92,6 +92,7 @@ const TaskCompleteButton = () => {
                 ]
             );
         } else {
+            dispatch(setUnprocessedTask({ deliveryId: deliveryItem.id }));
             setModalVisible(true);
         }
     };
@@ -113,38 +114,11 @@ const TaskCompleteButton = () => {
                 </Text>
             </TouchableOpacity>
 
-            <Modal visible={modalVisible} animationType="fade" transparent={true}>
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Incomplete Routes</Text>
+            <UnprocessedTaskModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+            />
 
-                        {incompleteRoutes.length > 0 ? (
-                            <>
-                                <Text style={styles.modalText}>
-                                    Please complete all steps for the following routes:
-                                </Text>
-
-                                {incompleteRoutes.map(route => (
-                                    <Text key={route.index} style={styles.routeItem}>
-                                        • {route.name} ({route.serviceType})
-                                    </Text>
-                                ))}
-                            </>
-                        ) : (
-                            <Text style={styles.modalText}>
-                                Some routes are not yet processed or marked as complete.
-                                Please ensure all routes are completed before marking the task as complete.
-                            </Text>
-                        )}
-
-                        <TouchableOpacity
-                            style={styles.modalButton}
-                            onPress={() => setModalVisible(false)}>
-                            <Text style={styles.modalButtonText}>OK</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
         </>
     );
 };

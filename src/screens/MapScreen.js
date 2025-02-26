@@ -21,8 +21,11 @@ import { DELIVERY_ITEMS } from './constants/dataDelivery';
 import CustomMarker from './components/customMarker';
 import TaskSlider from './components/TaskSlider';
 
-// MapScreen.js
+import { store } from '../store/store';
+
+
 const MapScreen = () => {
+  console.log('Current Redux state:', store.getState());
   const dispatch = useDispatch();
   const { zoomLevel, region, searchQuery } = useSelector(state => state.map);
   const { items: deliveryItems, selectedDeliveryId } = useSelector(state => state.deliveries);

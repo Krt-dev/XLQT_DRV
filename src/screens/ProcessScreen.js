@@ -41,9 +41,14 @@ import TaskCompleteButton from './components/TaskCompleteButton';
 import { getActionSteps } from '../utils/deliveryUtils';
 import SectionSeparator from './components/SectionSeparator';
 import DeliveryInfo from './components/DeliveryInfo';
-import { setLoading, selectIsLoading } from '../store/loadingSlice'; // Import loading actions and selector
+import { setLoading, selectIsLoading } from '../store/loadingSlice';
+import { store } from '../store/store';
+
+
 
 const ProcessScreen = () => {
+    console.log('Current Redux state:', store.getState());
+
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -213,7 +218,7 @@ const ProcessScreen = () => {
         );
 
         return (
-            routeSteps.length >= 4 && // ARRIVED, LOAD, LOADING, and DEPART
+            routeSteps.length >= 4 &&
             allStepsCompleted
         );
     };

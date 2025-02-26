@@ -1,28 +1,29 @@
 /* eslint-disable react-native/no-inline-styles */
+// UnprocessedTaskModal.js
 
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState } from 'react';
 import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { useSelector, useDispatch } from 'react-redux';
 import {
-    setRejectionData,
-    rejectDelivery,
-    clearRejectionData,
-} from './../../store/deliverySlice';
-const RejectModal = ({ visible, onClose }) => {
-    const dispatch = useDispatch();
-    const { rejectionData } = useSelector(state => state.deliveries);
+    setUnprocessedTask,
+    submitUnprocessedTask,
+    clearUnprocessedTaskData,
+} from '../../store/deliverySlice';
 
+const UnprocessedTaskModal = ({ visible, onClose }) => {
+    const dispatch = useDispatch();
+    const unprocessedTaskData = useSelector(state => state.deliveries.unprocessedTaskData);
     const deliveryItem = useSelector(state =>
-        state.deliveries.items.find(item => item.id === rejectionData?.deliveryId)
+        state.deliveries.items.find(item => item.id === unprocessedTaskData?.deliveryId)
     );
 
     const handleAttachment = () => {
         launchImageLibrary({ mediaType: 'photo', quality: 0.5 }, (response) => {
             if (!response.didCancel && !response.errorCode) {
-                dispatch(setRejectionData({
-                    ...rejectionData,
+                dispatch(setUnprocessedTask({
+                    ...unprocessedTaskData,
                     attachment: response.assets[0].uri,
                 }));
             }
@@ -30,32 +31,32 @@ const RejectModal = ({ visible, onClose }) => {
     };
 
     const handleUnattach = () => {
-        dispatch(setRejectionData({
-            ...rejectionData,
+        dispatch(setUnprocessedTask({
+            ...unprocessedTaskData,
             attachment: null,
         }));
     };
 
     const handleReasonChange = (text) => {
-        dispatch(setRejectionData({
-            ...rejectionData,
+        dispatch(setUnprocessedTask({
+            ...unprocessedTaskData,
             reason: text,
         }));
     };
 
     const handleSubmit = () => {
-        dispatch(rejectDelivery(
-            rejectionData.deliveryId,
-            rejectionData.reason,
-            rejectionData.attachment
-        ));
-        dispatch(clearRejectionData());
+        dispatch(submitUnprocessedTask({
+            deliveryId: unprocessedTaskData.deliveryId,
+            reason: unprocessedTaskData.reason,
+            attachment: unprocessedTaskData.attachment,
+        }));
+        dispatch(clearUnprocessedTaskData());
         onClose();
     };
 
     const maxCharacters = 200;
-    const rejectionReason = rejectionData?.reason || '';
-    const attachment = rejectionData?.attachment || null;
+    const reason = unprocessedTaskData?.reason || '';
+    const attachment = unprocessedTaskData?.attachment || null;
 
     return (
         <Modal
@@ -67,7 +68,7 @@ const RejectModal = ({ visible, onClose }) => {
             <View style={styles.modalOverlay}>
                 <View style={styles.modalContainer}>
                     <View style={{ alignItems: 'center' }}>
-                        <Text style={styles.modalTitle}>Cancel Trip</Text>
+                        <Text style={styles.modalTitle}>Unprocessed Task</Text>
                     </View>
                     <Text style={styles.storeTitle}>{deliveryItem?.store}</Text>
                     <View style={styles.infoRow}>
@@ -83,13 +84,13 @@ const RejectModal = ({ visible, onClose }) => {
                         <Text style={styles.details}>{deliveryItem?.time}</Text>
                     </View>
                     <Text style={styles.characterCount}>
-                        {rejectionReason.length} / {maxCharacters} characters
+                        {reason.length} / {maxCharacters} characters
                     </Text>
                     <TextInput
                         style={styles.input}
                         placeholder="Note"
                         placeholderTextColor="#A6A6A6"
-                        value={rejectionReason}
+                        value={reason}
                         onChangeText={handleReasonChange}
                         maxLength={maxCharacters}
                         multiline
@@ -118,10 +119,7 @@ const RejectModal = ({ visible, onClose }) => {
                     )}
 
                     <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={() => {
-                            onClose();
-                            dispatch(clearRejectionData());
-                        }}>
+                        <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
                             <Text style={styles.buttonText}>Cancel</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.button, styles.submitButton]} onPress={handleSubmit}>
@@ -133,7 +131,6 @@ const RejectModal = ({ visible, onClose }) => {
         </Modal>
     );
 };
-
 
 const styles = StyleSheet.create({
     modalOverlay: {
@@ -265,5 +262,4 @@ const styles = StyleSheet.create({
 
 
 });
-
-export default RejectModal;
+export default UnprocessedTaskModal;
