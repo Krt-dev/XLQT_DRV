@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     swipeButtonContainer: {
         alignItems: 'center',
         padding: 16,
-        backgroundColor: '#ffff',
+        backgroundColor: 'white',
     },
 });
 

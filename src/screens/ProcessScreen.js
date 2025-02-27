@@ -16,12 +16,14 @@ import {
     selectCurrentDelivery,
     selectExpandedSections,
     selectCompletedSteps,
-    // selectActionStatus,
     toggleSection,
     completeActionStep,
     updateActionStatus,
     resetProcessState,
     setIsDeliveryStarting,
+    setRoutes,
+    setRouteIndexForCancel,
+    setCancelTaskModalVisible,
 } from '../store/deliverySlice';
 import {
     selectSliderState,
@@ -43,6 +45,7 @@ import SectionSeparator from './components/SectionSeparator';
 import DeliveryInfo from './components/DeliveryInfo';
 import { setLoading, selectIsLoading } from '../store/loadingSlice';
 import { store } from '../store/store';
+import CancelTaskModal from './components/CancelTaskmodal';
 
 
 
@@ -70,7 +73,8 @@ const ProcessScreen = () => {
     } = useSelector(selectSliderState);
 
     const isLoading = useSelector(selectIsLoading);
-
+    // const isCancelTaskModalVisible = useSelector((state) => state.deliveries.isCancelTaskModalVisible);
+    const { isCancelTaskModalVisible } = useSelector(state => state.deliveries.cancelTaskData);
     useEffect(() => {
         let loadingTimeout;
 
@@ -105,6 +109,18 @@ const ProcessScreen = () => {
             dispatch(resetSlider());
         };
     }, [dispatch]);
+
+    useEffect(() => {
+        if (deliveryItem && deliveryItem.nextRoute) {
+            dispatch(setRoutes(deliveryItem.nextRoute));
+        }
+    }, [deliveryItem, dispatch]);
+
+    const handleCancelRoute = (routeIndex) => {
+        dispatch(setRouteIndexForCancel(routeIndex));
+        dispatch(setCancelTaskModalVisible(true));
+    };
+
 
     const animatedHeights = useRef(
         deliveryItem?.nextRoute?.map(() => new Animated.Value(0)) || [],
@@ -345,6 +361,7 @@ const ProcessScreen = () => {
                                 isRouteActive={isRouteActive}
                                 hasSwipedOnce={hasSwipedOnce}
                                 completedSteps={completedSteps}
+                                onCancel={() => handleCancelRoute(index)}
                             />
                         ))}
                         <View style={styles.completeButton}>
@@ -362,6 +379,7 @@ const ProcessScreen = () => {
                     disabled={swipeButtonDisabled}
                 />
             )}
+            {isCancelTaskModalVisible && <CancelTaskModal />}
         </View>
     );
 };
@@ -413,6 +431,7 @@ const styles = StyleSheet.create({
     loadingText: {
         marginTop: 10,
         fontSize: 16,
+        fontFamily: 'Karla-Medium',
     },
     completeButton: {
         paddingTop: 10,

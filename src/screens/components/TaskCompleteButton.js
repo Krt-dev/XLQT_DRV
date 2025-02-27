@@ -17,7 +17,7 @@ const TaskCompleteButton = () => {
     const [incompleteRoutes, setIncompleteRoutes] = useState([]);
     const deliveryItem = useSelector(selectCurrentDelivery);
     const completedStepsState = useSelector(selectCompletedSteps);
-    const modalVisible = useSelector(selectUnprocessedTaskModalVisible); // New selector
+    const modalVisible = useSelector(selectUnprocessedTaskModalVisible);
     const dispatch = useDispatch();
 
     const areAllRoutesCompleted = () => {

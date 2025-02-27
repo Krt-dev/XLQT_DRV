@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     items: [],
+    routes: [],
     selectedDeliveryId: null,
     activeTripId: null,
     rejectionData: {
@@ -23,7 +24,14 @@ const initialState = {
     isDeliveryStarting: false,
     modalContext: null,
     unprocessedTaskModalVisible: false,
-
+    cancelTaskData: {
+        isCancelTaskModalVisible: false,
+        routeIndexForCancel: null,
+        rejectionData: {
+            reason: '',
+            attachment: null,
+        },
+    },
 };
 
 const deliverySlice = createSlice({
@@ -32,6 +40,10 @@ const deliverySlice = createSlice({
     reducers: {
         setDeliveryItems: (state, action) => {
             state.items = action.payload;
+        },
+        // Add new reducer to set routes
+        setRoutes: (state, action) => {
+            state.routes = action.payload;
         },
         selectDelivery: (state, action) => {
             state.selectedDeliveryId = action.payload;
@@ -141,18 +153,34 @@ const deliverySlice = createSlice({
                 attachment: null,
             };
         },
-        // New reducers for modal visibility
         showUnprocessedTaskModal: (state) => {
             state.unprocessedTaskModalVisible = true;
         },
         hideUnprocessedTaskModal: (state) => {
             state.unprocessedTaskModalVisible = false;
         },
+        // --- Cancel Task Modal Related Reducers ---
+        setCancelTaskModalVisible: (state, action) => {
+            state.cancelTaskData.isCancelTaskModalVisible = action.payload;
+        },
+        setRouteIndexForCancel: (state, action) => {
+            state.cancelTaskData.routeIndexForCancel = action.payload;
+        },
+        setCancelTaskRejectionData: (state, action) => {
+            state.cancelTaskData.rejectionData = {
+                ...state.cancelTaskData.rejectionData,
+                ...action.payload,
+            };
+        },
+        clearCancelTaskRejectionData: (state) => {
+            state.cancelTaskData.rejectionData = { reason: '', attachment: null };
+        },
     },
 });
 
 export const {
     setDeliveryItems,
+    setRoutes, // Export the new action
     selectDelivery,
     startDelivery,
     rejectDelivery,
@@ -173,6 +201,10 @@ export const {
     clearUnprocessedTaskData,
     showUnprocessedTaskModal,
     hideUnprocessedTaskModal,
+    setCancelTaskModalVisible,
+    setRouteIndexForCancel,
+    setCancelTaskRejectionData,
+    clearCancelTaskRejectionData,
 } = deliverySlice.actions;
 
 export const selectCurrentDelivery = (state) =>
@@ -190,5 +222,10 @@ export const selectActionStatus = (state) =>
 // New selector for modal visibility
 export const selectUnprocessedTaskModalVisible = (state) =>
     state.deliveries.unprocessedTaskModalVisible;
+
+export const selectCancelTaskData = (state) => state.deliveries.cancelTaskData; // Selector for cancelTaskData
+
+// New selector for routes
+export const selectRoutes = (state) => state.deliveries.routes;
 
 export default deliverySlice.reducer;

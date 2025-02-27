@@ -2,9 +2,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { toggleSection } from '../../store/deliverySlice';
 import ActionStepsList from './ActionStepsList';
 import { getActionSteps } from '../../utils/deliveryUtils';
+import { setCancelTaskModalVisible, setRouteIndexForCancel } from '../../store/deliverySlice';
+import { useDispatch } from 'react-redux';
+
 
 const RouteItem = ({
     route,
@@ -18,6 +20,13 @@ const RouteItem = ({
     hasSwipedOnce,
     completedSteps,
 }) => {
+    const dispatch = useDispatch();
+
+    const handleCancelTask = () => {
+        dispatch(setRouteIndexForCancel(index));
+        dispatch(setCancelTaskModalVisible(true));
+    };
+
     const isRouteCompleted = () => {
         const routeSteps = getActionSteps(route.serviceType);
         if (!completedSteps[index] || !routeSteps.length) { return false; }
@@ -66,22 +75,25 @@ const RouteItem = ({
                             </View>
                         </View>
                     </View>
-                    <View>
-                        <View>
-                            {expandedSections[index] ? (
+                    <View style={styles.buttonContainer}>
+                        {expandedSections[index] ? (
+                            <View style={styles.expandedButtons}>
                                 <TouchableOpacity
-                                    onPress={() => toggleSection(index)}
-                                    style={styles.closeButton}
+                                    onPress={() => handleCancelTask()}
+                                    style={styles.cancelButton}
                                 >
                                     <MaterialCommunityIcons
-                                        name="close-circle"
-                                        size={24}
+                                        name="delete-circle"
+                                        size={26}
                                         color="#ff4444"
-                                        style={styles.chevron}
                                     />
                                 </TouchableOpacity>
-                            ) : null}
-                        </View>
+                                <TouchableOpacity
+                                    onPress={() => handleToggleSection(index)}
+                                    style={styles.closeButton}
+                                />
+                            </View>
+                        ) : null}
                     </View>
                 </View>
             </TouchableOpacity>
@@ -106,7 +118,6 @@ const RouteItem = ({
                     completedSteps={completedSteps}
                 />
             </Animated.View>
-            <View style={styles.line} />
         </View>
     );
 };
@@ -117,6 +128,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         borderRadius: 12,
         borderColor: '#eee',
+        overflow: 'hidden',
     },
     routeCard: {
         backgroundColor: '#ffffff',
@@ -188,10 +200,18 @@ const styles = StyleSheet.create({
     chevron: {
         marginLeft: 4,
     },
-    line: {
-        borderBottomColor: '#A6A6A6',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        width: '100%',
+    buttonContainer: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+    },
+    expandedButtons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    cancelButton: {
+        padding: 5,
+        marginRight: 5,
     },
 });
 
