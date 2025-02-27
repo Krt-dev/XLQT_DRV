@@ -22,6 +22,7 @@ const initialState = {
     },
     isDeliveryStarting: false,
     modalContext: null,
+    unprocessedTaskModalVisible: false,
 
 };
 
@@ -131,6 +132,7 @@ const deliverySlice = createSlice({
                 reason: '',
                 attachment: null,
             };
+            state.unprocessedTaskModalVisible = false;
         },
         clearUnprocessedTaskData: (state) => {
             state.unprocessedTaskData = {
@@ -138,6 +140,13 @@ const deliverySlice = createSlice({
                 reason: '',
                 attachment: null,
             };
+        },
+        // New reducers for modal visibility
+        showUnprocessedTaskModal: (state) => {
+            state.unprocessedTaskModalVisible = true;
+        },
+        hideUnprocessedTaskModal: (state) => {
+            state.unprocessedTaskModalVisible = false;
         },
     },
 });
@@ -162,6 +171,8 @@ export const {
     setUnprocessedTask,
     submitUnprocessedTask,
     clearUnprocessedTaskData,
+    showUnprocessedTaskModal,
+    hideUnprocessedTaskModal,
 } = deliverySlice.actions;
 
 export const selectCurrentDelivery = (state) =>
@@ -175,5 +186,9 @@ export const selectCompletedSteps = (state) =>
 
 export const selectActionStatus = (state) =>
     state.deliveries.process.actionStatus;
+
+// New selector for modal visibility
+export const selectUnprocessedTaskModalVisible = (state) =>
+    state.deliveries.unprocessedTaskModalVisible;
 
 export default deliverySlice.reducer;

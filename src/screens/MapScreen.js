@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useEffect } from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
+import { View, TextInput, StyleSheet, Text } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,7 +20,7 @@ import {
 import { DELIVERY_ITEMS } from './constants/dataDelivery';
 import CustomMarker from './components/customMarker';
 import TaskSlider from './components/TaskSlider';
-
+import MaterialButtonModal from './components/MaterialButtonModal';
 import { store } from '../store/store';
 
 
@@ -31,7 +31,6 @@ const MapScreen = () => {
   const { items: deliveryItems, selectedDeliveryId } = useSelector(state => state.deliveries);
 
   useEffect(() => {
-    // Add console.log to verify data
     console.log('Setting delivery items:', DELIVERY_ITEMS);
     dispatch(setDeliveryItems(DELIVERY_ITEMS));
   }, [dispatch]);
@@ -90,6 +89,11 @@ const MapScreen = () => {
           onChangeText={onSearchChange}
         />
       </View>
+      <MaterialButtonModal>
+        <View style={styles.container}>
+          <Text style={styles.text}>Temporary material list</Text>
+        </View>
+      </MaterialButtonModal>
       <TaskSlider />
     </View>
   );

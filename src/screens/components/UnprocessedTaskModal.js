@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-// UnprocessedTaskModal.js
 
-import React, { useState } from 'react';
+
+import React from 'react';
 import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -12,12 +12,9 @@ import {
     clearUnprocessedTaskData,
 } from '../../store/deliverySlice';
 
-const UnprocessedTaskModal = ({ visible, onClose }) => {
+const UnprocessedTaskModal = ({ visible, onClose, incompleteRoutes }) => {
     const dispatch = useDispatch();
     const unprocessedTaskData = useSelector(state => state.deliveries.unprocessedTaskData);
-    const deliveryItem = useSelector(state =>
-        state.deliveries.items.find(item => item.id === unprocessedTaskData?.deliveryId)
-    );
 
     const handleAttachment = () => {
         launchImageLibrary({ mediaType: 'photo', quality: 0.5 }, (response) => {
@@ -70,19 +67,18 @@ const UnprocessedTaskModal = ({ visible, onClose }) => {
                     <View style={{ alignItems: 'center' }}>
                         <Text style={styles.modalTitle}>Unprocessed Task</Text>
                     </View>
-                    <Text style={styles.storeTitle}>{deliveryItem?.store}</Text>
-                    <View style={styles.infoRow}>
-                        <Icon name="calendar" size={13} color="#A6A6A6" />
-                        <Text style={styles.details}>{deliveryItem?.date}</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Icon name="map-marker" size={13} color="#A6A6A6" />
-                        <Text style={styles.details}>{deliveryItem?.location}</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Icon name="clock-outline" size={13} color="#A6A6A6" />
-                        <Text style={styles.details}>{deliveryItem?.time}</Text>
-                    </View>
+
+                    {incompleteRoutes && incompleteRoutes.length > 0 ? (
+                        incompleteRoutes.map((route, index) => (
+                            <Text key={route.index} style={styles.routeItem}>
+                                {index + 1}. <Text style={styles.place}> {route.place}</Text> <Text style={styles.serviceType}>{route.serviceType}</Text>
+                            </Text>
+
+                        ))
+                    ) : (
+                        <Text style={styles.modalText}>No routes are unprocessed.</Text>
+                    )}
+
                     <Text style={styles.characterCount}>
                         {reason.length} / {maxCharacters} characters
                     </Text>
@@ -131,6 +127,7 @@ const UnprocessedTaskModal = ({ visible, onClose }) => {
         </Modal>
     );
 };
+
 
 const styles = StyleSheet.create({
     modalOverlay: {
@@ -258,6 +255,15 @@ const styles = StyleSheet.create({
         color: 'white',
         fontFamily: 'LexendDeca-Medium',
         fontSize: 14,
+    },
+    routeItem: {
+        fontFamily: 'Karla-SemiBold',
+        paddingBottom: 3,
+    },
+    serviceType: {
+        fontFamily: 'Karla-Medium',
+        fontSize: 10,
+        color: '#A6A6A6',
     },
 
 

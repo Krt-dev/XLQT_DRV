@@ -6,15 +6,18 @@ import {
     markDeliveryAsComplete,
     selectCompletedSteps,
     setUnprocessedTask,
+    selectUnprocessedTaskModalVisible,
+    showUnprocessedTaskModal,
+    hideUnprocessedTaskModal,
 } from '../../store/deliverySlice';
 import { getActionSteps } from '../../utils/deliveryUtils';
 import UnprocessedTaskModal from './UnprocessedTaskModal';
 
 const TaskCompleteButton = () => {
-    const [modalVisible, setModalVisible] = useState(false);
     const [incompleteRoutes, setIncompleteRoutes] = useState([]);
     const deliveryItem = useSelector(selectCurrentDelivery);
     const completedStepsState = useSelector(selectCompletedSteps);
+    const modalVisible = useSelector(selectUnprocessedTaskModalVisible); // New selector
     const dispatch = useDispatch();
 
     const areAllRoutesCompleted = () => {
@@ -46,7 +49,7 @@ const TaskCompleteButton = () => {
             if (!isRouteComplete) {
                 incomplete.push({
                     index: routeIndex,
-                    name: route.name || `Route ${routeIndex + 1}`,
+                    place: route.place || `Route ${routeIndex + 1}`,
                     serviceType: route.serviceType || 'Unknown',
                 });
             }
@@ -93,7 +96,7 @@ const TaskCompleteButton = () => {
             );
         } else {
             dispatch(setUnprocessedTask({ deliveryId: deliveryItem.id }));
-            setModalVisible(true);
+            dispatch(showUnprocessedTaskModal()); // New action
         }
     };
 
@@ -116,9 +119,9 @@ const TaskCompleteButton = () => {
 
             <UnprocessedTaskModal
                 visible={modalVisible}
-                onClose={() => setModalVisible(false)}
+                onClose={() => dispatch(hideUnprocessedTaskModal())} // New action
+                incompleteRoutes={incompleteRoutes}
             />
-
         </>
     );
 };
