@@ -10,11 +10,15 @@ import {
     setUnprocessedTask,
     submitUnprocessedTask,
     clearUnprocessedTaskData,
+    markDeliveryAsComplete,
 } from '../../store/deliverySlice';
 
 const UnprocessedTaskModal = ({ visible, onClose, incompleteRoutes }) => {
     const dispatch = useDispatch();
     const unprocessedTaskData = useSelector(state => state.deliveries.unprocessedTaskData);
+    const deliveryItem = useSelector(state =>
+        state.deliveries.items.find(item => item.id === unprocessedTaskData?.deliveryId)
+    );
 
     const handleAttachment = () => {
         launchImageLibrary({ mediaType: 'photo', quality: 0.5 }, (response) => {
@@ -42,15 +46,19 @@ const UnprocessedTaskModal = ({ visible, onClose, incompleteRoutes }) => {
     };
 
     const handleSubmit = () => {
-        dispatch(submitUnprocessedTask({
-            deliveryId: unprocessedTaskData.deliveryId,
-            reason: unprocessedTaskData.reason,
-            attachment: unprocessedTaskData.attachment,
-        }));
-        dispatch(clearUnprocessedTaskData());
-        onClose();
+        if (deliveryItem) {
+            dispatch(markDeliveryAsComplete(deliveryItem.id));
+            dispatch(submitUnprocessedTask({
+                deliveryId: unprocessedTaskData.deliveryId,
+                reason: unprocessedTaskData.reason,
+                attachment: unprocessedTaskData.attachment,
+            }));
+            dispatch(clearUnprocessedTaskData());
+            onClose();
+        } else {
+            console.warn('Delivery item is not available. Cannot mark as complete.');
+        }
     };
-
     const maxCharacters = 200;
     const reason = unprocessedTaskData?.reason || '';
     const attachment = unprocessedTaskData?.attachment || null;

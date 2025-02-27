@@ -96,7 +96,7 @@ const TaskCompleteButton = () => {
             );
         } else {
             dispatch(setUnprocessedTask({ deliveryId: deliveryItem.id }));
-            dispatch(showUnprocessedTaskModal()); // New action
+            dispatch(showUnprocessedTaskModal());
         }
     };
 
@@ -119,7 +119,7 @@ const TaskCompleteButton = () => {
 
             <UnprocessedTaskModal
                 visible={modalVisible}
-                onClose={() => dispatch(hideUnprocessedTaskModal())} // New action
+                onClose={() => dispatch(hideUnprocessedTaskModal())}
                 incompleteRoutes={incompleteRoutes}
             />
         </>
